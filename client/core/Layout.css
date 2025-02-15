@@ -1,0 +1,31 @@
+.app-container {
+  width: 100%;
+}
+
+.MuiToolbar-root {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fdfdfd;
+}
+
+.MuiTypography-root {
+  flex-grow: 1;
+  color: black;
+}
+
+.MuiButton-root {
+  color: black;
+}
+
+.MuiButton-text {
+  color: black;
+}
+
+.MuiButton-root:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: black;
+}
+
+.MuiAppBar-root {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

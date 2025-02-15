@@ -1,0 +1,24 @@
+<svg width="300" height="60" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+      @font-face {
+        font-family: 'Arial';
+        src: local('Arial');
+      }
+    </style>
+  </defs>
+  
+  <!-- Circle segments -->
+  <g transform="translate(30, 10)">
+    <path d="M20 0C8.954 0 0 8.954 0 20s8.954 20 20 20 20-8.954 20-20S31.046 0 20 0zm0 36c-8.837 0-16-7.163-16-16S11.163 4 20 4s16 7.163 16 16-7.163 16-16 16z" fill="#FF6B00"/>
+    <path d="M20 4c-8.837 0-16 7.163-16 16h16V4z" fill="#FF6B00"/>
+    <path d="M36 20c0-8.837-7.163-16-16-16v16h16z" fill="#FF6B00"/>
+    <path d="M20 36c8.837 0 16-7.163 16-16H20v16z" fill="#FF6B00"/>
+    <path d="M4 20c0 8.837 7.163 16 16 16V20H4z" fill="#FF6B00"/>
+    <!-- Center diamond -->
+    <rect x="18" y="18" width="4" height="4" transform="rotate(45 20 20)" fill="#000000"/>
+  </g>
+  
+  <!-- Text "FreshPlate" -->
+  <text x="80" y="35" fill="#FF6B00" style="font-family: Arial, sans-serif; font-size: 32px; font-weight: bold;">FreshPlate</text>
+</svg>
