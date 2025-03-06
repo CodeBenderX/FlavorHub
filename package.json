@@ -1,9 +1,10 @@
 {
-  "license":"ISC",
+  "license": "ISC",
   "dependencies": {
     "formidable": "^3.5.2",
     "in": "^0.19.0",
     "multer": "^1.4.5-lts.1",
-    "root": "^3.2.0"
+    "root": "^3.2.0",
+    "yarn": "^1.22.22"
   }
 }

@@ -6,10 +6,14 @@ import {
   Typography,
   Button,
   Grid2, 
-  Box
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { signin } from "./api-auth.js";
+import { signin, forgotPassword, verifySecurityAnswer, resetPassword } from "./api-auth.js";
 import auth from "./auth-helper";
 import loginpage from '../src/assets/login-signup.jpeg'
 
@@ -20,7 +24,7 @@ const useStyles = {
     textAlign: "center",
     paddingBottom: 2,
   },
-  error: {
+  error: {  
     verticalAlign: "middle",
   },
   title: {
@@ -41,6 +45,39 @@ export default function Signin() {
     error: "",
     redirectToReferrer: false,
   });
+
+  // States for Forgot Password modal
+  // const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  // const [fpEmail, setFpEmail] = useState("");
+  // const [fpError, setFpError] = useState("");
+  // const [fpMessage, setFpMessage] = useState("");
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [fpEmail, setFpEmail] = useState("");
+  const [fpError, setFpError] = useState("");
+  const [fpMessage, setFpMessage] = useState("");
+  const [securityQuestion, setSecurityQuestion] = useState("");
+  
+
+  // States for Security Question dialog
+  // const [securityQuestionDialogOpen, setSecurityQuestionDialogOpen] = useState(false);
+  // const [securityQuestionText, setSecurityQuestionText] = useState("");
+  // const [securityAnswer, setSecurityAnswer] = useState("");
+  // const [sqError, setSqError] = useState("");
+  // const [sqMessage, setSqMessage] = useState("");
+  const [securityQuestionDialogOpen, setSecurityQuestionDialogOpen] = useState(false);
+  const [securityAnswer, setSecurityAnswer] = useState("");
+  const [sqError, setSqError] = useState("");
+  const [sqMessage, setSqMessage] = useState("");
+
+  // ----- Reset Password Dialog State -----
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
+
+  // New state for the success dialog:
+  const [resetSuccessDialogOpen, setResetSuccessDialogOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,6 +121,122 @@ export default function Signin() {
   if (values.redirectToReferrer) {
     return <Navigate to={from} />;
   }
+
+   // Open Forgot Password modal
+   const handleOpenForgotPassword = () => {
+    // Reset all states related to forgot password flow
+    setForgotPasswordOpen(true);
+    setFpEmail("");
+    setFpError("");
+    setFpMessage("");
+    setSecurityQuestion("");
+    setSecurityAnswer("");
+    setSqError("");
+    setSqMessage("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setResetError("");
+    setResetMessage("");
+  };
+
+  // Close Forgot Password modal
+  const handleCloseForgotPassword = () => {
+    setForgotPasswordOpen(false);
+  };
+
+  // Handle Forgot Password submit
+  const handleForgotPasswordSubmit = async () => {
+    // Call the backend API to retrieve the security question
+    const response = await forgotPassword({ email: fpEmail });
+    console.log("Forgot password response:", response);
+    if (response.error) {
+      setFpError(response.error);
+    } else if (response.securityQuestion) {
+      // If a security question is returned, proceed to the next step.
+      //setFpMessage(response.message || "Security question retrieved.");
+      // Close the email dialog and open the security question dialog.
+      setFpMessage(response.message || "Security question retrieved.");
+      setSecurityQuestion(response.securityQuestion);
+
+      // Close the forgot password email dialog
+      setForgotPasswordOpen(false);
+
+      // Open the security question dialog
+      setSecurityQuestionDialogOpen(true);
+    } else {
+      setFpError("Unexpected response from server.");
+    }
+  }
+
+  // const handleOpenSecurityQuestionDialog = () => {
+  //   setSecurityQuestionDialogOpen(true);
+  //   setSecurityAnswer("");
+  //   setSqError("");
+  //   setSqMessage("");
+  // }
+  // ----- Security Question Dialog -----
+  const handleCloseSecurityQuestion = () => {
+    setSecurityQuestionDialogOpen(false);
+  }
+
+  const handleSecurityQuestionSubmit = async () => {
+    if (!securityAnswer) {
+      setSqError("Please provide an answer.");
+      return;
+    }
+    setSqError("");
+    setSqMessage("");
+
+    // Call the backend to verify the security answer
+    const response = await verifySecurityAnswer({ email: fpEmail, securityAnswer });
+    if (response.error) {
+      setSqError(response.error);
+    } else {
+      // If verified, let the user know and open the reset password dialog
+      setSqMessage("Security answer verified. You can now reset your password.");
+      setSecurityQuestionDialogOpen(false);
+      setResetPasswordDialogOpen(true);
+    }
+  }
+
+  // ----- Reset Password Dialog Handlers -----
+  const handleCloseResetPassword = () => {
+    setResetPasswordDialogOpen(false);
+  };
+
+  // 3. Submit the new password to the backend
+  const handleResetPasswordSubmit = async () => {
+    setResetError("");
+    setResetMessage("");
+
+    // Validate new password fields
+    if (!newPassword || !confirmPassword) {
+      setResetError("Please fill out both fields.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setResetError("Passwords do not match.");
+      return;
+    }
+
+    // Call the backend to reset the password
+    const response = await resetPassword({ email: fpEmail, newPassword });
+    if (response.error) {
+      setResetError(response.error);
+    } else {
+      setResetMessage("Your password has been successfully reset.");
+      // Optionally, you can close the dialog after a delay:
+      setResetPasswordDialogOpen(false);
+      setResetSuccessDialogOpen(true);
+
+    }
+  }
+
+  // ----- Reset Success Dialog -----
+const handleCloseResetSuccessDialog = () => {
+  setResetSuccessDialogOpen(false);
+  navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
+}
 
   return (
     <div style={{ backgroundColor: "#FFF4EA", height: "100vh" }}>
@@ -157,6 +310,18 @@ export default function Signin() {
             <Typography component="p" color="#000000">
               Don't have an account? <Link to="/signup">Join Now</Link>
             </Typography>
+            <Typography
+              component="p"
+              sx={{
+                cursor: "pointer",
+                textDecoration: "underline",
+                mt: 1,
+                color: "#000000"  // ✅ Moved color inside sx
+              }}
+              onClick={handleOpenForgotPassword}
+            >
+              Forgot Password?
+            </Typography>
           </CardContent>
         </Card>
         <Grid2 item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -173,6 +338,98 @@ export default function Signin() {
           />
         </Grid2>
       </Grid2>
+      {/* Forgot Password Modal */}
+      <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
+        <DialogTitle>Forgot Password</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">Enter your email address:</Typography>
+          <TextField
+            fullWidth
+            label="Email"
+            value={fpEmail}
+            onChange={(e) => setFpEmail(e.target.value)}
+            margin="dense"
+          />
+          {fpError && <Typography color="error">{fpError}</Typography>}
+          {fpMessage && <Typography color="primary">{fpMessage}</Typography>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseForgotPassword} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleForgotPasswordSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Security Question Dialog */}
+      <Dialog open={securityQuestionDialogOpen} onClose={handleCloseSecurityQuestion}>
+        <DialogTitle>Security Question</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">{securityQuestion}</Typography>
+          <TextField
+            fullWidth
+            label="Your Answer"
+            value={securityAnswer}
+            onChange={(e) => setSecurityAnswer(e.target.value)}
+            margin="dense"
+          />
+          {sqError && <Typography color="error">{sqError}</Typography>}
+          {sqMessage && <Typography color="primary">{sqMessage}</Typography>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSecurityQuestion} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSecurityQuestionSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordDialogOpen} onClose={handleCloseResetPassword}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            margin="dense"
+            fullWidth
+          />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            margin="dense"
+            fullWidth
+          />
+          {resetError && <Typography color="error">{resetError}</Typography>}
+          {resetMessage && <Typography color="primary">{resetMessage}</Typography>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseResetPassword} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleResetPasswordSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Reset Success Dialog */}
+      <Dialog open={resetSuccessDialogOpen} onClose={handleCloseResetSuccessDialog}>
+        <DialogTitle>Password Reset Successful</DialogTitle>
+        <DialogContent>
+          <Typography>Your password has been successfully reset.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseResetSuccessDialog} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
