@@ -30,6 +30,8 @@ const UserAccount = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    securityQuestion: "",
+    securityAnswer: "",
   }); // State for update form
   const [updateType, setUpdateType] = useState(""); // Update form selector
   const [isUpdating, setIsUpdating] = useState(false); // State to manage update button state
@@ -58,6 +60,17 @@ const UserAccount = () => {
     };
     fetchUserData();
   }, []);
+
+  // When updateType changes to "security", prepopulate updateData with current values from user
+  useEffect(() => {
+    if (updateType === "security" && user) {
+      setUpdateData((prev) => ({
+        ...prev,
+        securityQuestion: user.securityQuestion || "",
+        securityAnswer: user.securityAnswer || "",
+      }));
+    }
+  }, [updateType, user]);
 
   // Handle update form changes
   const handleChange = (e) => {
@@ -90,7 +103,13 @@ const UserAccount = () => {
         return;
       }
     }
-
+    if (updateType === "security") {
+      // Validate that both security fields are filled
+      if (!updateData.securityQuestion || !updateData.securityAnswer) {
+        alert("Security question and answer are required.");
+        return;
+      }
+    }
     setIsUpdating(true); // Disable the button during update
     setError(null);
     const jwt = auth.isAuthenticated();
@@ -121,6 +140,15 @@ const UserAccount = () => {
           { t: jwt.token },
           { password: updateData.password }
         );
+      } else if (updateType === "security") {
+        updatedUser = await update(
+          { userId: jwt.user._id },
+          { t: jwt.token },
+          { 
+            securityQuestion: updateData.securityQuestion,
+            securityAnswer: updateData.securityAnswer
+          }
+        );
       } else {
         updatedUser = await update(
           { userId: jwt.user._id },
@@ -129,7 +157,7 @@ const UserAccount = () => {
         );
       }
       setUser(updatedUser);
-      setUpdateData({ name: "", email: "", password: "", confirmPassword: "" });
+      setUpdateData({ name: "", email: "", password: "", confirmPassword: "", securityQuestion: "", securityAnswer: "" });
       setUpdateType(""); // Reset the selection
 
       alert(`${updateType.charAt(0).toUpperCase() + updateType.slice(1)} updated successfully. Please log in again.`);
@@ -255,6 +283,7 @@ const UserAccount = () => {
               {!isAdmin && <MenuItem value="name">Name</MenuItem>}
               {!isAdmin && <MenuItem value="email">Email</MenuItem>}
               <MenuItem value="password">Password</MenuItem>
+              <MenuItem value="security">Security</MenuItem>
             </Select>
           </FormControl>
           {updateType === "name" && (
@@ -295,6 +324,26 @@ const UserAccount = () => {
                 name="confirmPassword"
                 type="password"
                 value={updateData.confirmPassword}
+                onChange={handleChange}
+                margin="normal"
+              />
+            </>
+          )}
+          {updateType === "security" && (
+            <>
+              <TextField
+                fullWidth
+                label="Security Question"
+                name="securityQuestion"
+                value={updateData.securityQuestion}
+                onChange={handleChange}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Security Answer"
+                name="securityAnswer"
+                value={updateData.securityAnswer}
                 onChange={handleChange}
                 margin="normal"
               />
