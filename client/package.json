@@ -40,7 +40,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "nodemon": "^3.0.2",
-    "vite": "^6.0.1"
+    "vite": "^6.2.0"
   },
   "dev": "concurrently 'vite' 'nodemon server.js'"
 }
