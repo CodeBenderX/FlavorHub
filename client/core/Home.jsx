@@ -100,9 +100,10 @@ export default function HomePage() {
               sx={{
                 flex: "1 0 50%",
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: "row",
                 justifyContent: "center",
                 padding: "32px",
+                backgroundColor: "#EBEFFC",
               }}
             >
               <Typography
