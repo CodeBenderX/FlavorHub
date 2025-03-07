@@ -67,7 +67,7 @@ const UserAccount = () => {
       setUpdateData((prev) => ({
         ...prev,
         securityQuestion: user.securityQuestion || "",
-        securityAnswer: user.securityAnswer || "",
+        securityAnswer: "",
       }));
     }
   }, [updateType, user]);
@@ -146,7 +146,7 @@ const UserAccount = () => {
           { t: jwt.token },
           { 
             securityQuestion: updateData.securityQuestion,
-            securityAnswer: updateData.securityAnswer
+            securityAnswerPlain: updateData.securityAnswer
           }
         );
       } else {
