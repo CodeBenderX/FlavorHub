@@ -206,32 +206,26 @@ export default function AboutPage() {
             {[
               {
                 name: "Angelo Tiquio",
-                role: "Frontend Developer",
                 image: aboutAngelo,
               },
               {
                 name: "Lorenzo Menil Jr.",
-                role: "Backend Developer",
                 image: aboutLorenzo,
               },
               {
                 name: "Bianca Salunga",
-                role: "QA/UI Designer",
                 image: aboutBianca,
               },
               {
                 name: "Byron Ho",
-                role: "Backend Developer",
                 image: aboutByron,
               },
               {
                 name: "Kunai Chyngyzbekova",
-                role: "QA",
                 image: aboutKunai,
               },
               {
-                name: "Bhuvnesh Bhardwaj",
-                role: "Backend Developer",
+                name: "Bhuvnesh Bhardwaj",  
                 image: aboutBhuvnesh,
               },
             ].map((member, index) => (
