@@ -100,7 +100,7 @@ const requireSignin = expressjwt({
           }
       
           // Compare the provided securityAnswer with what's in the database
-          if (user.securityAnswer !== securityAnswer) {
+          if (!user.authenticateSecurityAnswer(securityAnswer)) {
             return res.status(400).json({ error: "Incorrect security answer" });
           }
       
@@ -130,6 +130,5 @@ const requireSignin = expressjwt({
           console.error(err);
           return res.status(500).json({ error: "Server error resetting password" });
         }
-      }
-        
+      }   
 export default { signin, signout, requireSignin, hasAuthorization, setUser, forgotPassword, verifySecurityAnswer, resetPassword }

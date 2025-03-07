@@ -10,8 +10,10 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  IconButton
 } from "@mui/material";
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip"; // <-- Secret icon
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { signin, forgotPassword, verifySecurityAnswer, resetPassword } from "./api-auth.js";
 import auth from "./auth-helper";
@@ -46,11 +48,7 @@ export default function Signin() {
     redirectToReferrer: false,
   });
 
-  // States for Forgot Password modal
-  // const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-  // const [fpEmail, setFpEmail] = useState("");
-  // const [fpError, setFpError] = useState("");
-  // const [fpMessage, setFpMessage] = useState("");
+  
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [fpEmail, setFpEmail] = useState("");
   const [fpError, setFpError] = useState("");
@@ -58,12 +56,7 @@ export default function Signin() {
   const [securityQuestion, setSecurityQuestion] = useState("");
   
 
-  // States for Security Question dialog
-  // const [securityQuestionDialogOpen, setSecurityQuestionDialogOpen] = useState(false);
-  // const [securityQuestionText, setSecurityQuestionText] = useState("");
-  // const [securityAnswer, setSecurityAnswer] = useState("");
-  // const [sqError, setSqError] = useState("");
-  // const [sqMessage, setSqMessage] = useState("");
+  
   const [securityQuestionDialogOpen, setSecurityQuestionDialogOpen] = useState(false);
   const [securityAnswer, setSecurityAnswer] = useState("");
   const [sqError, setSqError] = useState("");
@@ -78,6 +71,12 @@ export default function Signin() {
 
   // New state for the success dialog:
   const [resetSuccessDialogOpen, setResetSuccessDialogOpen] = useState(false);
+
+   // Admin login modal state
+   const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
+   const [adminEmail, setAdminEmail] = useState("");
+   const [adminPassword, setAdminPassword] = useState("");
+   const [adminError, setAdminError] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -188,15 +187,17 @@ export default function Signin() {
     setSqMessage("");
 
     // Call the backend to verify the security answer
-    const response = await verifySecurityAnswer({ email: fpEmail, securityAnswer });
-    if (response.error) {
-      setSqError(response.error);
-    } else {
-      // If verified, let the user know and open the reset password dialog
-      setSqMessage("Security answer verified. You can now reset your password.");
-      setSecurityQuestionDialogOpen(false);
-      setResetPasswordDialogOpen(true);
-    }
+    // Normalize the answer before sending it
+  const normalizedAnswer = securityAnswer.trim().toLowerCase();
+
+  const response = await verifySecurityAnswer({ email: fpEmail, securityAnswer: normalizedAnswer });
+  if (response.error) {
+    setSqError(response.error);
+  } else {
+    setSqMessage("Security answer verified. You can now reset your password.");
+    setSecurityQuestionDialogOpen(false);
+    setResetPasswordDialogOpen(true);
+  }
   }
 
   // ----- Reset Password Dialog Handlers -----
@@ -236,6 +237,36 @@ export default function Signin() {
 const handleCloseResetSuccessDialog = () => {
   setResetSuccessDialogOpen(false);
   navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
+}
+
+// Handler for the secret icon double-click: open admin login modal
+const handleSecretIconDoubleClick = () => {
+  // Reset admin login state
+  setAdminEmail("");
+  setAdminPassword("");
+  setAdminError("");
+  setAdminLoginDialogOpen(true);
+};
+
+// Handler for admin login form submission
+const handleAdminLoginSubmit = async () => {
+  setAdminError("");
+  // Call your signin API with admin credentials
+  const data = await signin({ email: adminEmail, password: adminPassword });
+  if (data.error) {
+    setAdminError(data.error);
+  } else {
+    // Check if the signed-in user has an admin role
+    if (data.user.role !== "admin") {
+      setAdminError("Access denied. Not an admin account.");
+      auth.clearJWT();
+    } else {
+      auth.authenticate(data, () => {
+        setAdminLoginDialogOpen(false);
+        navigate("/admin/dashboard"); // Adjust this route as needed
+      });
+    }
+  }
 }
 
   return (
@@ -338,6 +369,21 @@ const handleCloseResetSuccessDialog = () => {
           />
         </Grid2>
       </Grid2>
+       {/* Secret Icon in the lower-left corner */}
+       <Box
+        sx={{
+          position: "fixed",
+          left: 20,
+          bottom: 20,
+          cursor: "pointer",
+          zIndex: 9999,
+        }}
+        onDoubleClick={handleSecretIconDoubleClick}
+      >
+        <IconButton>
+          <PrivacyTipIcon sx={{ color: "gray", fontSize: 30 }} />
+        </IconButton>
+      </Box>
       {/* Forgot Password Modal */}
       <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
         <DialogTitle>Forgot Password</DialogTitle>
@@ -427,6 +473,41 @@ const handleCloseResetSuccessDialog = () => {
         <DialogActions>
           <Button onClick={handleCloseResetSuccessDialog} color="primary">
             OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+       {/* Admin Login Modal */}
+       <Dialog
+        open={adminLoginDialogOpen}
+        onClose={() => setAdminLoginDialogOpen(false)}
+      >
+        <DialogTitle>Admin Login</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Admin Email"
+            value={adminEmail}
+            onChange={(e) => setAdminEmail(e.target.value)}
+            margin="dense"
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            type="password"
+            value={adminPassword}
+            onChange={(e) => setAdminPassword(e.target.value)}
+            margin="dense"
+          />
+          {adminError && (
+            <Typography color="error" variant="body2">
+              {adminError}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAdminLoginDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleAdminLoginSubmit} color="primary">
+            Login
           </Button>
         </DialogActions>
       </Dialog>
