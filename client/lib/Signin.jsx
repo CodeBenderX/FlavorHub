@@ -187,15 +187,17 @@ export default function Signin() {
     setSqMessage("");
 
     // Call the backend to verify the security answer
-    const response = await verifySecurityAnswer({ email: fpEmail, securityAnswer });
-    if (response.error) {
-      setSqError(response.error);
-    } else {
-      // If verified, let the user know and open the reset password dialog
-      setSqMessage("Security answer verified. You can now reset your password.");
-      setSecurityQuestionDialogOpen(false);
-      setResetPasswordDialogOpen(true);
-    }
+    // Normalize the answer before sending it
+  const normalizedAnswer = securityAnswer.trim().toLowerCase();
+
+  const response = await verifySecurityAnswer({ email: fpEmail, securityAnswer: normalizedAnswer });
+  if (response.error) {
+    setSqError(response.error);
+  } else {
+    setSqMessage("Security answer verified. You can now reset your password.");
+    setSecurityQuestionDialogOpen(false);
+    setResetPasswordDialogOpen(true);
+  }
   }
 
   // ----- Reset Password Dialog Handlers -----

@@ -64,7 +64,9 @@ export default function Signup() {
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    if (
+      !/^(?!.*\.\.)(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(values.email)
+    ) {
       setValues({ ...values, error: "Invalid email format" });
       return;
     }
@@ -84,7 +86,7 @@ export default function Signup() {
       email: values.email || undefined,
       password: values.password || undefined,
       securityQuestion: values.securityQuestion || undefined,
-      securityAnswer: values.securityAnswer || undefined
+      securityAnswerPlain: values.securityAnswer || undefined
     };
 
     create(user).then(data => {
