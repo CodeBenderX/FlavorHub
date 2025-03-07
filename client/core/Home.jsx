@@ -19,7 +19,7 @@ import image3 from "../src/assets/BakedSalmonwithVeg.png";
 import image4 from "../src/assets/BakedHam.png";
 import image5 from "../src/assets/ShrimpPasta.png";
 import image6 from "../src/assets/StrawberryCake.png";
-import burger from "../src/assets/BurgerHero1.png";
+import bannerImage from "../src/assets/bannerImage.png";
 
 const featuredRecipes = [
   {
@@ -81,7 +81,7 @@ export default function HomePage() {
   };
 
   return (
-    <div style={{backgroundColor:'#fff4ea'}}>
+    <div style={{backgroundColor:'whitesmoke'}}>
       <Container component="main" >
         <section>
           <Typography variant="h2" component="h1" gutterBottom>
@@ -100,10 +100,10 @@ export default function HomePage() {
               sx={{
                 flex: "1 0 50%",
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 justifyContent: "center",
                 padding: "32px",
-                backgroundColor: "#EBEFFC",
+                backgroundColor: "#c5cbdb",
               }}
             >
               <Typography
@@ -140,11 +140,12 @@ export default function HomePage() {
               component="img"
               sx={{
                 width: "35%",
-                objectFit: "cover",
+                objectFit: "contain",
                 objectPosition: "center",
-                transform: "scaleX(1.2)",
+                transform: "scaleY(1.32)",
+                backgroundColor: "#c5cbdb",
               }}
-              image={burger}
+              image={bannerImage}
               alt="Delicious burger with fresh vegetables"
             />
           </Card>
