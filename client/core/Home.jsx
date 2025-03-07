@@ -11,8 +11,6 @@ import {
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import CardActionArea from "@mui/material/CardActionArea";
-import CardActions from "@mui/material/CardActions";
 import image1 from "../src/assets/FriedPorkBelly.png";
 import image2 from "../src/assets/GrilledSquid.png";
 import image3 from "../src/assets/BakedSalmonwithVeg.png";
