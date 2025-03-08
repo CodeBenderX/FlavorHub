@@ -73,10 +73,10 @@ export default function Signin() {
   const [resetSuccessDialogOpen, setResetSuccessDialogOpen] = useState(false);
 
    // Admin login modal state
-   const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
-   const [adminEmail, setAdminEmail] = useState("");
-   const [adminPassword, setAdminPassword] = useState("");
-   const [adminError, setAdminError] = useState("");
+  //  const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
+  //  const [adminEmail, setAdminEmail] = useState("");
+  //  const [adminPassword, setAdminPassword] = useState("");
+  //  const [adminError, setAdminError] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -92,6 +92,7 @@ export default function Signin() {
     };
 
     signin(user).then((data) => {
+      console.log("Signin response:", data);
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -240,34 +241,34 @@ const handleCloseResetSuccessDialog = () => {
 }
 
 // Handler for the secret icon double-click: open admin login modal
-const handleSecretIconDoubleClick = () => {
-  // Reset admin login state
-  setAdminEmail("");
-  setAdminPassword("");
-  setAdminError("");
-  setAdminLoginDialogOpen(true);
-};
+// const handleSecretIconDoubleClick = () => {
+//   // Reset admin login state
+//   setAdminEmail("");
+//   setAdminPassword("");
+//   setAdminError("");
+//   setAdminLoginDialogOpen(true);
+// };
 
 // Handler for admin login form submission
-const handleAdminLoginSubmit = async () => {
-  setAdminError("");
-  // Call your signin API with admin credentials
-  const data = await signin({ email: adminEmail, password: adminPassword });
-  if (data.error) {
-    setAdminError(data.error);
-  } else {
-    // Check if the signed-in user has an admin role
-    if (data.user.role !== "admin") {
-      setAdminError("Access denied. Not an admin account.");
-      auth.clearJWT();
-    } else {
-      auth.authenticate(data, () => {
-        setAdminLoginDialogOpen(false);
-        navigate("/admin/dashboard"); // Adjust this route as needed
-      });
-    }
-  }
-}
+// const handleAdminLoginSubmit = async () => {
+//   setAdminError("");
+//   // Call your signin API with admin credentials
+//   const data = await signin({ email: adminEmail, password: adminPassword });
+//   if (data.error) {
+//     setAdminError(data.error);
+//   } else {
+//     // Check if the signed-in user has an admin role
+//     if (data.user.role !== "admin") {
+//       setAdminError("Access denied. Not an admin account.");
+//       auth.clearJWT();
+//     } else {
+//       auth.authenticate(data, () => {
+//         setAdminLoginDialogOpen(false);
+//         navigate("/admin/dashboard"); // Adjust this route as needed
+//       });
+//     }
+//   }
+// }
 
   return (
     <div style={{ backgroundColor: "#FFF4EA", height: "100vh" }}>
@@ -370,7 +371,7 @@ const handleAdminLoginSubmit = async () => {
         </Grid2>
       </Grid2>
        {/* Secret Icon in the lower-left corner */}
-       <Box
+       {/* <Box
         sx={{
           position: "fixed",
           left: 20,
@@ -383,7 +384,7 @@ const handleAdminLoginSubmit = async () => {
         <IconButton>
           <PrivacyTipIcon sx={{ color: "gray", fontSize: 30 }} />
         </IconButton>
-      </Box>
+      </Box> */}
       {/* Forgot Password Modal */}
       <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
         <DialogTitle>Forgot Password</DialogTitle>
@@ -477,7 +478,7 @@ const handleAdminLoginSubmit = async () => {
         </DialogActions>
       </Dialog>
        {/* Admin Login Modal */}
-       <Dialog
+       {/* <Dialog
         open={adminLoginDialogOpen}
         onClose={() => setAdminLoginDialogOpen(false)}
       >
@@ -510,7 +511,7 @@ const handleAdminLoginSubmit = async () => {
             Login
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }
