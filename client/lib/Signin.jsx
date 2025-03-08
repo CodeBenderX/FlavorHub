@@ -5,33 +5,41 @@ import {
   TextField,
   Typography,
   Button,
-  Grid2, 
+  Grid2,
   Box,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip"; // <-- Secret icon
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { signin, forgotPassword, verifySecurityAnswer, resetPassword } from "./api-auth.js";
+import {
+  signin,
+  forgotPassword,
+  verifySecurityAnswer,
+  resetPassword,
+} from "./api-auth.js";
 import auth from "./auth-helper";
-import loginpage from '../src/assets/login-signup.jpeg'
+import loginpage from "../src/assets/login-signup.jpeg";
 
 const useStyles = {
   card: {
-    maxWidth: 600,
+    maxWidth: 500,
     margin: "auto",
     textAlign: "center",
+    alignItems: "center",
+    marginTop: 20,
     paddingBottom: 2,
+    borderRadius: "10px",
   },
-  error: {  
+  error: {
     verticalAlign: "middle",
   },
   title: {
     marginTop: 2,
-    color: "#FF6E1C",
+    color: "red",
   },
   textField: {
     marginLeft: 1,
@@ -48,16 +56,14 @@ export default function Signin() {
     redirectToReferrer: false,
   });
 
-  
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [fpEmail, setFpEmail] = useState("");
   const [fpError, setFpError] = useState("");
   const [fpMessage, setFpMessage] = useState("");
   const [securityQuestion, setSecurityQuestion] = useState("");
-  
 
-  
-  const [securityQuestionDialogOpen, setSecurityQuestionDialogOpen] = useState(false);
+  const [securityQuestionDialogOpen, setSecurityQuestionDialogOpen] =
+    useState(false);
   const [securityAnswer, setSecurityAnswer] = useState("");
   const [sqError, setSqError] = useState("");
   const [sqMessage, setSqMessage] = useState("");
@@ -73,10 +79,11 @@ export default function Signin() {
   const [resetSuccessDialogOpen, setResetSuccessDialogOpen] = useState(false);
 
    // Admin login modal state
-   const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
-   const [adminEmail, setAdminEmail] = useState("");
-   const [adminPassword, setAdminPassword] = useState("");
-   const [adminError, setAdminError] = useState("");
+  //  const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
+  //  const [adminEmail, setAdminEmail] = useState("");
+  //  const [adminPassword, setAdminPassword] = useState("");
+  //  const [adminError, setAdminError] = useState("");
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -92,6 +99,7 @@ export default function Signin() {
     };
 
     signin(user).then((data) => {
+      console.log("Signin response:", data);
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -121,8 +129,8 @@ export default function Signin() {
     return <Navigate to={from} />;
   }
 
-   // Open Forgot Password modal
-   const handleOpenForgotPassword = () => {
+  // Open Forgot Password modal
+  const handleOpenForgotPassword = () => {
     // Reset all states related to forgot password flow
     setForgotPasswordOpen(true);
     setFpEmail("");
@@ -165,7 +173,7 @@ export default function Signin() {
     } else {
       setFpError("Unexpected response from server.");
     }
-  }
+  };
 
   // const handleOpenSecurityQuestionDialog = () => {
   //   setSecurityQuestionDialogOpen(true);
@@ -176,7 +184,7 @@ export default function Signin() {
   // ----- Security Question Dialog -----
   const handleCloseSecurityQuestion = () => {
     setSecurityQuestionDialogOpen(false);
-  }
+  };
 
   const handleSecurityQuestionSubmit = async () => {
     if (!securityAnswer) {
@@ -188,17 +196,22 @@ export default function Signin() {
 
     // Call the backend to verify the security answer
     // Normalize the answer before sending it
-  const normalizedAnswer = securityAnswer.trim().toLowerCase();
+    const normalizedAnswer = securityAnswer.trim().toLowerCase();
 
-  const response = await verifySecurityAnswer({ email: fpEmail, securityAnswer: normalizedAnswer });
-  if (response.error) {
-    setSqError(response.error);
-  } else {
-    setSqMessage("Security answer verified. You can now reset your password.");
-    setSecurityQuestionDialogOpen(false);
-    setResetPasswordDialogOpen(true);
-  }
-  }
+    const response = await verifySecurityAnswer({
+      email: fpEmail,
+      securityAnswer: normalizedAnswer,
+    });
+    if (response.error) {
+      setSqError(response.error);
+    } else {
+      setSqMessage(
+        "Security answer verified. You can now reset your password."
+      );
+      setSecurityQuestionDialogOpen(false);
+      setResetPasswordDialogOpen(true);
+    }
+  };
 
   // ----- Reset Password Dialog Handlers -----
   const handleCloseResetPassword = () => {
@@ -229,133 +242,142 @@ export default function Signin() {
       // Optionally, you can close the dialog after a delay:
       setResetPasswordDialogOpen(false);
       setResetSuccessDialogOpen(true);
-
     }
-  }
+  };
 
   // ----- Reset Success Dialog -----
-const handleCloseResetSuccessDialog = () => {
-  setResetSuccessDialogOpen(false);
-  navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
-}
+  const handleCloseResetSuccessDialog = () => {
+    setResetSuccessDialogOpen(false);
+    navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
+  };
 
 // Handler for the secret icon double-click: open admin login modal
-const handleSecretIconDoubleClick = () => {
-  // Reset admin login state
-  setAdminEmail("");
-  setAdminPassword("");
-  setAdminError("");
-  setAdminLoginDialogOpen(true);
-};
+// const handleSecretIconDoubleClick = () => {
+//   // Reset admin login state
+//   setAdminEmail("");
+//   setAdminPassword("");
+//   setAdminError("");
+//   setAdminLoginDialogOpen(true);
+// };
 
 // Handler for admin login form submission
-const handleAdminLoginSubmit = async () => {
-  setAdminError("");
-  // Call your signin API with admin credentials
-  const data = await signin({ email: adminEmail, password: adminPassword });
-  if (data.error) {
-    setAdminError(data.error);
-  } else {
-    // Check if the signed-in user has an admin role
-    if (data.user.role !== "admin") {
-      setAdminError("Access denied. Not an admin account.");
-      auth.clearJWT();
-    } else {
-      auth.authenticate(data, () => {
-        setAdminLoginDialogOpen(false);
-        navigate("/admin/dashboard"); // Adjust this route as needed
-      });
-    }
-  }
-}
+// const handleAdminLoginSubmit = async () => {
+//   setAdminError("");
+//   // Call your signin API with admin credentials
+//   const data = await signin({ email: adminEmail, password: adminPassword });
+//   if (data.error) {
+//     setAdminError(data.error);
+//   } else {
+//     // Check if the signed-in user has an admin role
+//     if (data.user.role !== "admin") {
+//       setAdminError("Access denied. Not an admin account.");
+//       auth.clearJWT();
+//     } else {
+//       auth.authenticate(data, () => {
+//         setAdminLoginDialogOpen(false);
+//         navigate("/admin/dashboard"); // Adjust this route as needed
+//       });
+//     }
+//   }
+// }
 
   return (
-    <div style={{ backgroundColor: "#FFF4EA", height: "100vh" }}>
+    <div style={{ backgroundColor: "#FFFFFF", height: "100vh" }}>
       <Grid2 container spacing={0} sx={{ maxWidth: '100%'}}>
         <Card sx={useStyles.card}>
           <CardContent>
             <Typography variant="h6" sx={useStyles.title}>
               Login
-            </Typography>
-            <TextField
-              id="email"
-              type="email"
-              label="Email"
-              sx={useStyles.textField}
-              value={values.email}
-              onChange={handleChange("email")}
-              margin="normal"
-            />
-            <br />
-            <TextField
-              id="password"
-              type="password"
-              label="Password"
-              sx={useStyles.textField}
-              value={values.password}
-              onChange={handleChange("password")}
-              margin="normal"
-            />
-            <br />
-            {values.error && (
-              <Typography component="p" color="error">
-                {values.error}
               </Typography>
-            )}
-            <br />
-            <Button
-              color="#FFFFFF"
-              variant="contained"
-              onClick={clickSubmit}
-              sx={{
-                margin: "auto",
-                marginBottom: 2,
-                marginRight:1,
-                bgcolor: "#000000",
-                color: "white",
-                "&:hover": {
-                  bgcolor: "#FFFFFF",
+              <TextField
+                id="email"
+                type="email"
+                label="Email"
+                sx={useStyles.textField}
+                value={values.email}
+                onChange={handleChange("email")}
+                margin="normal"
+              />
+              <br />
+              <TextField
+                id="password"
+                type="password"
+                label="Password"
+                sx={useStyles.textField}
+                value={values.password}
+                onChange={handleChange("password")}
+                margin="normal"
+              />
+              <br />
+              {values.error && (
+                <Typography component="p" color="error">
+                  {values.error}
+                </Typography>
+              )}
+              <br />
+              <Button
+                color="#FFFFFF"
+                variant="contained"
+                onClick={clickSubmit}
+                sx={{
+                  margin: "auto",
+                  marginBottom: 2,
+                  marginRight: 1,
+                  bgcolor: "#000000",
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: "#FFFFFF",
+                    border: "1px solid #000000",
+                  },
+                }}
+              >
+                Login
+              </Button>
+              <Button
+                color="#000000"
+                variant="contained"
+                onClick={clickRegister}
+                sx={{
+                  margin: "auto",
+                  marginBottom: 2,
+                  marginLeft: 1,
                   border: "1px solid #000000",
-                },
-              }}
-            >
-              Login
-            </Button>
-            <Button
-              color="#000000"
-              variant="contained"
-              onClick={clickRegister}
-              sx={{
-                margin: "auto",
-                marginBottom: 2,
-                marginLeft:1,
-                border: "1px solid #000000",
-                '&:hover': {
-                  bgcolor: '#000000', 
-                  color: '#FFFFFF'
-                }
-              }}
-            >
-              Register
-            </Button>
-            <Typography component="p" color="#000000">
-              Don't have an account? <Link to="/signup">Join Now</Link>
-            </Typography>
-            <Typography
-              component="p"
-              sx={{
-                cursor: "pointer",
-                textDecoration: "underline",
-                mt: 1,
-                color: "#000000"  // ✅ Moved color inside sx
-              }}
-              onClick={handleOpenForgotPassword}
-            >
-              Forgot Password?
-            </Typography>
-          </CardContent>
-        </Card>
-        <Grid2 item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  "&:hover": {
+                    bgcolor: "#000000",
+                    color: "#FFFFFF !important",
+                  },
+                }}
+              >
+                Register
+              </Button>
+              <Typography component="p" color="#000000">
+                Don't have an account? <Link to="/signup">Join Now</Link>
+              </Typography>
+              <Typography
+                component="p"
+                sx={{
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  mt: 1,
+                  color: "#000000", // ✅ Moved color inside sx
+                }}
+                onClick={handleOpenForgotPassword}
+              >
+                Forgot Password?
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid2>
+        <Grid2
+          item
+          xs={12}
+          md={6}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Box
             component="img"
             sx={{
@@ -368,9 +390,8 @@ const handleAdminLoginSubmit = async () => {
             src={loginpage}
           />
         </Grid2>
-      </Grid2>
        {/* Secret Icon in the lower-left corner */}
-       <Box
+       {/* <Box
         sx={{
           position: "fixed",
           left: 20,
@@ -383,10 +404,10 @@ const handleAdminLoginSubmit = async () => {
         <IconButton>
           <PrivacyTipIcon sx={{ color: "gray", fontSize: 30 }} />
         </IconButton>
-      </Box>
+      </Box> */}
       {/* Forgot Password Modal */}
       <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
-        <DialogTitle>Forgot Password</DialogTitle>
+        <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
           <Typography variant="body1">Enter your email address:</Typography>
           <TextField
@@ -409,7 +430,10 @@ const handleAdminLoginSubmit = async () => {
         </DialogActions>
       </Dialog>
       {/* Security Question Dialog */}
-      <Dialog open={securityQuestionDialogOpen} onClose={handleCloseSecurityQuestion}>
+      <Dialog
+        open={securityQuestionDialogOpen}
+        onClose={handleCloseSecurityQuestion}
+      >
         <DialogTitle>Security Question</DialogTitle>
         <DialogContent>
           <Typography variant="body1">{securityQuestion}</Typography>
@@ -453,7 +477,9 @@ const handleAdminLoginSubmit = async () => {
             fullWidth
           />
           {resetError && <Typography color="error">{resetError}</Typography>}
-          {resetMessage && <Typography color="primary">{resetMessage}</Typography>}
+          {resetMessage && (
+            <Typography color="primary">{resetMessage}</Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseResetPassword} color="secondary">
@@ -465,7 +491,10 @@ const handleAdminLoginSubmit = async () => {
         </DialogActions>
       </Dialog>
       {/* Reset Success Dialog */}
-      <Dialog open={resetSuccessDialogOpen} onClose={handleCloseResetSuccessDialog}>
+      <Dialog
+        open={resetSuccessDialogOpen}
+        onClose={handleCloseResetSuccessDialog}
+      >
         <DialogTitle>Password Reset Successful</DialogTitle>
         <DialogContent>
           <Typography>Your password has been successfully reset.</Typography>
@@ -477,7 +506,7 @@ const handleAdminLoginSubmit = async () => {
         </DialogActions>
       </Dialog>
        {/* Admin Login Modal */}
-       <Dialog
+       {/* <Dialog
         open={adminLoginDialogOpen}
         onClose={() => setAdminLoginDialogOpen(false)}
       >
@@ -510,7 +539,7 @@ const handleAdminLoginSubmit = async () => {
             Login
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }

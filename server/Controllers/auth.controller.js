@@ -11,7 +11,7 @@ const signin = async (req, res) => {
         if (!user.authenticate(req.body.password)) {
         return res.status('401').send({ error: "Email and password don't match." })
         }
-        const token = jwt.sign({ _id: user._id, name: user.name, email: user.email, role: user.role  }, config.jwtSecret) 
+        const token = jwt.sign({ _id: user._id, name: user.name, email: user.email, admin: user.admin  }, config.jwtSecret) 
         res.cookie('t', token, { expire: new Date() + 9999 }) 
         return res.json({
         token, 
@@ -19,7 +19,7 @@ const signin = async (req, res) => {
         _id: user._id, 
         name: user.name,
         email: user.email, 
-        role: user.role
+        admin: user.admin
         }
         })
         } catch (err) {
@@ -131,4 +131,19 @@ const requireSignin = expressjwt({
           return res.status(500).json({ error: "Server error resetting password" });
         }
       }   
-export default { signin, signout, requireSignin, hasAuthorization, setUser, forgotPassword, verifySecurityAnswer, resetPassword }
+      const isAdmin = (req, res, next) => {
+        // Check if req.profile (loaded by userByID) exists and if admin flag is true
+        if (req.auth && req.auth.admin === true) {
+          return next();
+        }
+        return res.status(403).json({ error: "User is not authorized as admin" });
+      };
+      export const canUpdateUser = (req, res, next) => {
+        // Check if the authenticated user's ID matches the target user's ID or if the authenticated user is an admin
+        if (req.auth && (req.auth._id === req.profile._id || req.auth.admin === true)) {
+          return next();
+        }
+        return res.status(403).json({ error: "User is not authorized" });
+      };
+      
+export default { signin, signout, requireSignin, hasAuthorization, setUser, forgotPassword, verifySecurityAnswer, resetPassword, isAdmin, canUpdateUser }
