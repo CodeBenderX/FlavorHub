@@ -271,7 +271,7 @@ const handleCloseResetSuccessDialog = () => {
 // }
 
   return (
-    <div style={{ backgroundColor: "#FFF4EA", height: "100vh" }}>
+    <div style={{ backgroundColor: "#FFFFFF", height: "100vh" }}>
       <Grid2 container spacing={0} sx={{ maxWidth: '100%'}}>
         <Card sx={useStyles.card}>
           <CardContent>
