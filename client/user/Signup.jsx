@@ -9,15 +9,17 @@ const useStyles = {
     maxWidth: 500,
     margin: 'auto',
     textAlign: 'center',
-    marginTop: 20,
-    paddingBottom: 2
+    alignItems: 'center',
+    marginTop: 5,
+    paddingBottom: 2,
+    borderRadius: '10px'
   },
   error: {
     verticalAlign: 'middle'
   },
   title: {
     marginTop: 2,
-    color: '#FF6E1C'
+    color: 'red'
   },
   textField: {
     width: '100%'
@@ -100,7 +102,7 @@ export default function Signup() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: '#fff4ea' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center',bgcolor: '#fff4f0' }}>
       <Grid container spacing={0} sx={{ maxWidth: '100%'}}>
         <Grid item xs={12} md={6}>
           <Card sx={useStyles.card}>
