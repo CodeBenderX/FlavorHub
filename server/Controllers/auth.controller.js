@@ -138,4 +138,12 @@ const requireSignin = expressjwt({
         }
         return res.status(403).json({ error: "User is not authorized as admin" });
       };
-export default { signin, signout, requireSignin, hasAuthorization, setUser, forgotPassword, verifySecurityAnswer, resetPassword, isAdmin }
+      export const canUpdateUser = (req, res, next) => {
+        // Check if the authenticated user's ID matches the target user's ID or if the authenticated user is an admin
+        if (req.auth && (req.auth._id === req.profile._id || req.auth.admin === true)) {
+          return next();
+        }
+        return res.status(403).json({ error: "User is not authorized" });
+      };
+      
+export default { signin, signout, requireSignin, hasAuthorization, setUser, forgotPassword, verifySecurityAnswer, resetPassword, isAdmin, canUpdateUser }
