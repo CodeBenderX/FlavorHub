@@ -79,7 +79,7 @@ export default function HomePage() {
   };
 
   return (
-    <div style={{backgroundColor:'whitesmoke'}}>
+    <div style={{backgroundColor:'#FFFFFF'}}>
       <Container component="main" >
         <section>
           <Typography variant="h2" component="h1" gutterBottom>

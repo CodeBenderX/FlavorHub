@@ -100,7 +100,7 @@ export default function Signup() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: '#fff4ea' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: '#FFFFFF' }}>
       <Grid container spacing={0} sx={{ maxWidth: '100%'}}>
         <Grid item xs={12} md={6}>
           <Card sx={useStyles.card}>
