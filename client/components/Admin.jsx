@@ -14,6 +14,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,12 +22,16 @@ import {
   updateUserSecurity,
   updateUserPassword,
   setUserAsAdmin,
+  removeUserAsAdmin,
 } from "./api-admin";
 import auth from "../lib/auth-helper";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
+  
+  
+  
 
   // Dialog states for security and password updates
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
@@ -35,6 +40,11 @@ export default function AdminDashboard() {
   const [newSecurityQuestion, setNewSecurityQuestion] = useState("");
   const [newSecurityAnswer, setNewSecurityAnswer] = useState("");
   const [newPassword, setNewPassword] = useState("");
+
+  // Validation error messages
+  const [securityError, setSecurityError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -58,26 +68,34 @@ export default function AdminDashboard() {
   // --- Security Dialog Handlers ---
   const openSecurityDialog = (user) => {
     setSelectedUser(user);
-    setNewSecurityQuestion("");
+    // Prepopulate with the user's current security question if available
+    setNewSecurityQuestion(user.securityQuestion || "");
     setNewSecurityAnswer("");
+    setSecurityError("");
     setSecurityDialogOpen(true);
   };
 
   const closeSecurityDialog = () => {
     setSecurityDialogOpen(false);
     setSelectedUser(null);
+    setSecurityError("");
   };
 
   const handleUpdateSecurity = async () => {
-    if (!selectedUser) return;
+    // Validate that both fields are provided
+    if (!newSecurityQuestion.trim() || !newSecurityAnswer.trim()) {
+      setSecurityError("Both security question and answer are required.");
+      return;
+    }
+    // Call the API helper with keys matching the user account update
     const response = await updateUserSecurity(selectedUser._id, {
-      newSecurityQuestion,
-      newSecurityAnswer,
+      securityQuestion: newSecurityQuestion,
+      securityAnswerPlain: newSecurityAnswer,
     });
     if (response.error) {
       setMessage(response.error);
     } else {
-      setMessage("Security question and answer updated.");
+      setMessage("Security question and answer updated successfully.");
       closeSecurityDialog();
       loadUsers();
     }
@@ -87,27 +105,43 @@ export default function AdminDashboard() {
   const openPasswordDialog = (user) => {
     setSelectedUser(user);
     setNewPassword("");
+    setConfirmPassword("");
+    setPasswordError("");
     setPasswordDialogOpen(true);
   };
 
   const closePasswordDialog = () => {
     setPasswordDialogOpen(false);
     setSelectedUser(null);
+    setPasswordError("");
   };
 
   const handleUpdatePassword = async () => {
-    if (!selectedUser) return;
-    const response = await updateUserPassword(selectedUser._id, { newPassword });
+    // Validate password: non-empty and at least 6 characters
+    if (!newPassword) {
+      setPasswordError("Password cannot be empty.");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+        setPasswordError("Passwords do not match.");
+        return;
+      }
+    // Call the API helper using key "password" as expected by your backend
+    const response = await updateUserPassword(selectedUser._id, { password: newPassword });
     if (response.error) {
       setMessage(response.error);
     } else {
-      setMessage("Password updated.");
+      setMessage("Password updated successfully.");
       closePasswordDialog();
       loadUsers();
     }
   };
 
-  // --- Set as Admin Handler ---
+  // --- Set/Remove Admin Handlers ---
   const handleSetAdmin = async (user) => {
     const response = await setUserAsAdmin(user._id);
     if (response.error) {
@@ -118,19 +152,25 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleRemoveAdmin = async (user) => {
+    const response = await removeUserAsAdmin(user._id);
+    if (response.error) {
+      setMessage(response.error);
+    } else {
+      setMessage(`${user.name} is no longer an admin.`);
+      loadUsers();
+    }
+  };
+
   // Get the authenticated user's name from auth
   const authUser = auth.isAuthenticated() && auth.isAuthenticated().user;
 
   return (
-    <div style={{ padding: 20 }}>
+    <Box sx={{ padding: 2 }}>
       <Typography variant="h4" gutterBottom>
         Admin Dashboard {authUser ? `- ${authUser.name}` : ""}
       </Typography>
-      {message && (
-        <Typography variant="body1" color="error">
-          {message}
-        </Typography>
-      )}
+      {message && <Typography variant="body1" color="error">{message}</Typography>}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -148,25 +188,18 @@ export default function AdminDashboard() {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.admin ? "Yes" : "No"}</TableCell>
                 <TableCell>
-                  <Button
-                    variant="outlined"
-                    onClick={() => openSecurityDialog(user)}
-                    style={{ marginRight: 8 }}
-                  >
+                  <Button variant="outlined" onClick={() => openSecurityDialog(user)} sx={{ mr: 1 }}>
                     Reset Security Q/A
                   </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => openPasswordDialog(user)}
-                    style={{ marginRight: 8 }}
-                  >
+                  <Button variant="outlined" onClick={() => openPasswordDialog(user)} sx={{ mr: 1 }}>
                     Reset Password
                   </Button>
-                  {!user.admin && (
-                    <Button
-                      variant="outlined"
-                      onClick={() => handleSetAdmin(user)}
-                    >
+                  {user.admin ? (
+                    <Button variant="outlined" onClick={() => handleRemoveAdmin(user)}>
+                      Remove as Admin
+                    </Button>
+                  ) : (
+                    <Button variant="outlined" onClick={() => handleSetAdmin(user)}>
                       Set as Admin
                     </Button>
                   )}
@@ -177,24 +210,29 @@ export default function AdminDashboard() {
         </Table>
       </TableContainer>
 
-      {/* Reset Security Question/Answer Dialog */}
+      {/* Reset Security Q/A Dialog */}
       <Dialog open={securityDialogOpen} onClose={closeSecurityDialog}>
         <DialogTitle>Reset Security Question &amp; Answer</DialogTitle>
         <DialogContent>
           <TextField
-            label="New Security Question"
+            label="Security Question"
             fullWidth
             margin="dense"
             value={newSecurityQuestion}
             onChange={(e) => setNewSecurityQuestion(e.target.value)}
           />
           <TextField
-            label="New Security Answer"
+            label="Security Answer"
             fullWidth
             margin="dense"
             value={newSecurityAnswer}
             onChange={(e) => setNewSecurityAnswer(e.target.value)}
           />
+          {securityError && (
+            <Typography variant="caption" color="error">
+              {securityError}
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={closeSecurityDialog} color="secondary">
@@ -218,6 +256,19 @@ export default function AdminDashboard() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            fullWidth
+            margin="dense"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          {passwordError && (
+            <Typography variant="caption" color="error">
+              {passwordError}
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={closePasswordDialog} color="secondary">
@@ -228,6 +279,6 @@ export default function AdminDashboard() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }

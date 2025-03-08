@@ -18,40 +18,41 @@ export const getAllUsers = async () => {
 };
 
 // Update a user's security question and answer
-export const updateUserSecurity = async (userId, { newSecurityQuestion, newSecurityAnswer }) => {
-  try {
-    const response = await fetch(`/api/users/${userId}/security`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${auth.isAuthenticated().token}`
-      },
-      body: JSON.stringify({ newSecurityQuestion, newSecurityAnswer })
-    });
-    return await response.json();
-  } catch (err) {
-    return { error: "Could not update security question/answer" };
-  }
-};
+export const updateUserSecurity = async (userId, { securityQuestion, securityAnswerPlain }) => {
+    try {
+      const response = await fetch(`/api/users/${userId}/security`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.isAuthenticated().token}`,
+        },
+        body: JSON.stringify({ securityQuestion, securityAnswerPlain }),
+      });
+      return await response.json();
+    } catch (err) {
+      return { error: "Could not update security question/answer" };
+    }
+  };
 
 // Update a user's password
-export const updateUserPassword = async (userId, { newPassword }) => {
+export const updateUserPassword = async (userId, { password }) => {
   try {
     const response = await fetch(`/api/users/${userId}/password`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${auth.isAuthenticated().token}`
+        Authorization: `Bearer ${auth.isAuthenticated().token}`,
       },
-      body: JSON.stringify({ newPassword })
+      body: JSON.stringify({ password }),
     });
     return await response.json();
   } catch (err) {
     return { error: "Could not update password" };
   }
 };
+
 export const setUserAsAdmin = async (userId) => {
     try {
       const response = await fetch(`/api/users/${userId}/admin`, {
@@ -62,6 +63,22 @@ export const setUserAsAdmin = async (userId) => {
           Authorization: `Bearer ${auth.isAuthenticated().token}`,
         },
         body: JSON.stringify({ admin: true }),
+      });
+      return await response.json();
+    } catch (err) {
+      return { error: "Could not update admin status" };
+    }
+  };
+  export const removeUserAsAdmin = async (userId) => {
+    try {
+      const response = await fetch(`/api/users/${userId}/admin`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.isAuthenticated().token}`,
+        },
+        body: JSON.stringify({ admin: false }),
       });
       return await response.json();
     } catch (err) {
