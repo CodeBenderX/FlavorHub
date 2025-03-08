@@ -80,6 +80,7 @@ export default function HomePage() {
 
   return (
     <div style={{backgroundColor:'#FFF4F0'}}>
+
       <Container component="main" >
         <section>
           <Typography variant="h2" component="h1" gutterBottom>
