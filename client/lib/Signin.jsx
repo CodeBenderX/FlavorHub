@@ -291,28 +291,6 @@ export default function Signin() {
       }}
     >
       <Grid container spacing={0} sx={{ maxWidth: "100%" }}>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            component="img"
-            sx={{
-              maxWidth: "100%",
-              width: "100%",
-              height: "100vh",
-              objectFit: "cover",
-            }}
-            alt="Healthy food"
-            src={loginpage}
-          />
-        </Grid>
         <Grid item xs={12} md={6}>
           <Card sx={useStyles.card}>
             <CardContent>
@@ -398,6 +376,28 @@ export default function Signin() {
             </CardContent>
           </Card>
         </Grid>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            component="img"
+            sx={{
+              maxWidth: "100%",
+              width: "100%",
+              height: "100vh",
+              objectFit: "cover",
+            }}
+            alt="Healthy food"
+            src={loginpage}
+          />
+        </Grid>
       </Grid>
       {/* Secret Icon in the lower-left corner */}
       <Box
@@ -416,7 +416,7 @@ export default function Signin() {
       </Box>
       {/* Forgot Password Modal */}
       <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
-        <DialogTitle>Forgot Password</DialogTitle>
+        <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
           <Typography variant="body1">Enter your email address:</Typography>
           <TextField
