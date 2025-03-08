@@ -16,7 +16,7 @@ const create = async (req, res) => {
 }
 const list = async (req, res) => {
     try {
-        let users = await User.find().select('name email updated created')
+        let users = await User.find().select('_id name email updated created admin')
         res.json(users)
     } catch (err) {
         return res.status(400).json({
@@ -72,4 +72,19 @@ const remove = async (req, res) => {
         })
     }
 }
-export default { create, userByID, read, list, remove, update }
+
+const setAdmin = async (req, res) => {
+    try {
+      let user = req.profile; // Assume userByID middleware has loaded the user
+      user.admin = req.body.admin; // Set admin field based on request body
+      await user.save();
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      res.json(user);
+    } catch (err) {
+      return res.status(400).json({
+        error: "Could not update admin status",
+      });
+    }
+  }
+export default { create, userByID, read, list, remove, update, setAdmin }

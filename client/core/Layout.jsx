@@ -120,6 +120,17 @@ export default function Layout() {
               >
                 Contact
               </Button>
+              {/* Conditionally render the admin menu item */}
+              {auth.isAuthenticated().user && auth.isAuthenticated().user.admin && (
+                <Button
+                  component={Link}
+                  to="/admin"
+                  color="inherit"
+                  style={isActive(location, "/admin")}
+                >
+                  Admin
+                </Button>
+              )}
               <Button
                 color="inherit"
                 style={isActive(location, "/logout")}
