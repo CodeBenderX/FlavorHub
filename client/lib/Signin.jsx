@@ -5,7 +5,7 @@ import {
   TextField,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Box,
   Dialog,
   DialogTitle,
@@ -367,8 +367,8 @@ export default function Signin() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid
+        </Grid2>
+        <Grid2
           item
           xs={12}
           md={6}
@@ -390,7 +390,6 @@ export default function Signin() {
             src={loginpage}
           />
         </Grid2>
-      </Grid2>
        {/* Secret Icon in the lower-left corner */}
        {/* <Box
         sx={{
