@@ -79,7 +79,8 @@ export default function HomePage() {
   };
 
   return (
-    <div style={{backgroundColor:'#FFFFFF'}}>
+    <div style={{backgroundColor:'#FFF4F0'}}>
+
       <Container component="main" >
         <section>
           <Typography variant="h2" component="h1" gutterBottom>
@@ -101,7 +102,7 @@ export default function HomePage() {
                 flexDirection: "column",
                 justifyContent: "center",
                 padding: "32px",
-                backgroundColor: "#c5cbdb",
+                backgroundColor: "#FFF40",
               }}
             >
               <Typography
@@ -141,7 +142,7 @@ export default function HomePage() {
                 objectFit: "contain",
                 objectPosition: "center",
                 transform: "scaleY(1.32)",
-                backgroundColor: "#c5cbdb",
+                backgroundColor: "#FFF40",
               }}
               image={bannerImage}
               alt="Delicious burger with fresh vegetables"
