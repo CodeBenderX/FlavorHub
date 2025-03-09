@@ -7,7 +7,7 @@ import logo from "../src/assets/FreshPlate-logo.png";
 
 const isActive = (location, path) => {
   return location.pathname === path
-    ? { borderBottom: "2px solid #ff0000" , color:"black"}
+    ? { borderBottom: "2px solid #DA3743" , color:"black"}
     : { color: "#000" };
 };
 
@@ -57,7 +57,7 @@ export default function Layout() {
                 color="inherit"
                 style={isActive(location, "/signin")}
                 sx={{
-                  border: "2px solid red",
+                  border: "2px solid #DA3743",
                   marginLeft: "5px",
                 }}
               >
@@ -68,8 +68,8 @@ export default function Layout() {
                 to="/signup"
                 style={isActive(location, "/signup")}
                 sx={{
-                  border: "2px solid red",
-                  backgroundColor: "red",
+                  border: "2px solid #DA3743",
+                  backgroundColor: "#DA3743",
                   color: "whitesmoke !important",
                   marginLeft: "5px"
                 }}

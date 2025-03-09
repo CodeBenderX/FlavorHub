@@ -100,12 +100,12 @@ const ContactUsPage = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#FFF5EB", minHeight: "100vh", padding: 4 }}> 
+    <Box sx={{ backgroundColor: "#F9F9F9", minHeight: "100vh", padding: 4 }}> 
       <Container component="main" maxWidth="sm" sx={{ paddingTop: 4, paddingBottom: 4 }}>
         <Typography
           variant="h3"
           align="center"
-          sx={{ fontWeight: "bold", color: "#FF7043", marginBottom: 2 }}
+          sx={{ fontWeight: "bold", color: "#DA3743", marginBottom: 2 }}
         >
           Contact Us
         </Typography>

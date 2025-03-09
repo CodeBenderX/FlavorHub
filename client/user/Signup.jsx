@@ -19,7 +19,7 @@ const useStyles = {
   },
   title: {
     marginTop: 2,
-    color: 'red'
+    color: '#DA3743'
   },
   textField: {
     width: '100%'

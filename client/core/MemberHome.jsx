@@ -314,7 +314,7 @@ export default function MemberHome() {
 
 
   return (
-    <div style={{ backgroundColor: "#FFF4F0" }}>
+    <div style={{ backgroundColor: "#f9f9f9" }}>
       <Container component="main" maxWidth="lg" sx={{ width: "80%" }}>
         <section>
           <Typography variant="h2" component="h1" gutterBottom>
@@ -435,10 +435,10 @@ export default function MemberHome() {
                 mt: 2,
                 border: "1px solid #DA3743",
                 color: "#DA3743",
-                backgroundColor: "#FFF4F0",
+                backgroundColor: "transparent",
                 "&:hover": {
                   color: "#DA3743",
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: "transparent",
                 },
               }}
             >

@@ -15,7 +15,7 @@ import aboutBhuvnesh from "../src/assets/react.svg";
 export default function AboutPage() {
   return (
     // edited the width to make it ocuppy 80% of the page contained them in div so it will contain the background
-    <div style={{ backgroundColor: "#whitesmoke" }}>
+    <div style={{ backgroundColor: "#f9f9f9" }}>
       <Box sx={{ width: "80%", margin: "auto", padding: 4 }}>
         {" "}
         {/* Full-page layout */}
@@ -25,9 +25,9 @@ export default function AboutPage() {
           component="h1"
           gutterBottom
           align="center"
-          sx={{ color: "red" }}
+          sx={{ color: "#DA3743" }}
         >
-          About <img src={logo} alt="FreshPlate Logo" style={{ width: 180 }} />
+          About <img src={logo} alt="FlavorHub Logo" style={{ width: 180 }} />
         </Typography>
         <Box
           sx={{
@@ -40,7 +40,7 @@ export default function AboutPage() {
           <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
             Welcome to{" "}
             <strong>
-              <span style={{ color: "red" }}>FlavorHub</span>
+              <span style={{ color: "#DA3743" }}>FlavorHub</span>
             </strong>{" "}
             – your ultimate culinary companion! Whether you're a seasoned chef
             or a kitchen novice, we’re here to ignite your creativity and help
@@ -63,7 +63,7 @@ export default function AboutPage() {
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
               At{" "}
               <strong>
-                <span style={{ color: "red" }}>FlavorHub</span>
+                <span style={{ color: "#DA3743" }}>FlavorHub</span>
               </strong>
               , we believe cooking should be fresh, fun, and effortless. That’s
               why we’ve created a space where you can explore diverse recipes,
@@ -126,7 +126,7 @@ export default function AboutPage() {
           >
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
               <strong>
-                <span style={{ color: "red" }}>FlavorHub</span>
+                <span style={{ color: "#DA3743" }}>FlavorHub</span>
               </strong>{" "}
               was born from a passion for home cooking and a desire to make
               sharing and discovering great food effortless. What began as a
@@ -157,7 +157,7 @@ export default function AboutPage() {
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
               The kitchen is a place for everyone to explore and express
               themselves, and <strong>
-                <span style={{ color: "red" }}>FlavorHub</span>
+                <span style={{ color: "#DA3743" }}>FlavorHub</span>
               </strong>{" "} is here to guide you along the way.
             </Typography>
           </Grid>
@@ -191,7 +191,7 @@ export default function AboutPage() {
             sx={{ color: "#4A4A4A" }}
           >
             ★ Meet the Team:{" "}
-            <span style={{ color: "#FF7043", fontWeight: "bold" }}>
+            <span style={{ color: "#DA3743", fontWeight: "bold" }}>
               Pseudo Squad
             </span>
           </Typography>
