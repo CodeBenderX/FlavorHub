@@ -26,6 +26,13 @@ router.route('/api/recipes/:recipeId')
 router.route('/api/recipes/:recipeId/comments')
   .post(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.addComment)
 
+router.route('/api/recipes/creator/:name')
+  .get(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.getRecipesByCreator);
+
+
+router.route('/api/recipes/:recipeId/comments/:commentId')
+  .delete(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.deleteComment);
+
 router.param('recipeId', recipeCtrl.recipeByID)
 
 export default router

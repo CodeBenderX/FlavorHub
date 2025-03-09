@@ -279,6 +279,42 @@ const addComment = async (req, res) => {
   }
 };
 
+const getRecipesByCreator = async (req, res) => {
+  try {
+    // Find recipes whose "creator" field matches req.params.name
+    const recipes = await Recipe.find({ creator: req.params.name });
+    res.json(recipes);
+  } catch (err) {
+    res.status(400).json({ error: "Could not fetch recipes" });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const { recipeId, commentId } = req.params;
+    console.log("Attempting deletion: recipe", recipeId, "comment", commentId);
+
+    // Find the recipe by its ID
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Find the comment subdocument by ID
+    const comment = recipe.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    // Use pull to remove the comment from the array
+    recipe.comments.pull(commentId);
+    await recipe.save();
+    return res.json({ message: "Comment deleted successfully", recipe });
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    return res.status(400).json({ error: "Could not delete comment", details: err.message });
+  }
+};
 
 export default { createRecipe, getAllRecipes, updateRecipe, deleteRecipe, read, defaultPhoto, photo, recipeByID, updateCreator, deleteUserRecipes,
-  transferRecipesToAdmin, remove, addComment };
+  transferRecipesToAdmin, remove, addComment, getRecipesByCreator, deleteComment };

@@ -85,3 +85,36 @@ export const setUserAsAdmin = async (userId) => {
       return { error: "Could not update admin status" };
     }
   };
+
+  export const getRecipesByUser = async (creator) => {
+    try {
+      const response = await fetch(`/api/recipes/creator/${encodeURIComponent(creator)}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.isAuthenticated().token}`,
+        },
+      });
+      return await response.json();
+    } catch (err) {
+      return { error: "Could not fetch recipes" };
+    }
+  };
+
+  // Delete a recipe comment by recipeId and commentId
+export const deleteRecipeComment = async (recipeId, commentId) => {
+  try {
+    const response = await fetch(`/api/recipes/${recipeId}/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.isAuthenticated().token}`,
+      },
+    });
+    return await response.json();
+  } catch (err) {
+    return { error: "Could not delete comment" };
+  }
+};

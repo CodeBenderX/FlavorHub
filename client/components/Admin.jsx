@@ -23,6 +23,8 @@ import {
   updateUserPassword,
   setUserAsAdmin,
   removeUserAsAdmin,
+  getRecipesByUser,
+  deleteRecipeComment
 } from "./api-admin";
 import auth from "../lib/auth-helper";
 
@@ -45,6 +47,16 @@ export default function AdminDashboard() {
   const [securityError, setSecurityError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Recipe Dialog states
+  const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
+  const [recipeUser, setRecipeUser] = useState(null);
+  const [userRecipes, setUserRecipes] = useState([]);
+
+  // Comment Dialog states
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [selectedRecipeForComments, setSelectedRecipeForComments] = useState(null);
+
 
   const navigate = useNavigate();
 
@@ -162,6 +174,54 @@ export default function AdminDashboard() {
     }
   };
 
+  // --- Recipe List Handler ---
+  const handleShowRecipes = async (user) => {
+    setRecipeUser(user);
+    try {
+      const recipesData = await getRecipesByUser(user.name);
+      console.log("Fetched recipes:", recipesData); 
+      if (recipesData.error) {
+        setMessage(recipesData.error);
+      } else {
+        setUserRecipes(recipesData);
+        setRecipeDialogOpen(true);
+      }
+    } catch (error) {
+      setMessage("Failed to load recipes.");
+    }
+  };
+
+  // --- Comment Dialog Handlers ---
+  const openCommentDialog = (recipe) => {
+    setSelectedRecipeForComments(recipe);
+    setCommentDialogOpen(true);
+  };
+
+  const closeCommentDialog = () => {
+    setCommentDialogOpen(false);
+    setSelectedRecipeForComments(null);
+  };
+
+  const handleDeleteComment = async (recipeId, commentId) => {
+    const response = await deleteRecipeComment(recipeId, commentId);
+    if (response.error) {
+      setMessage(response.error);
+    } else {
+      setMessage("Comment deleted successfully.");
+      // Update the comments in the selected recipe locally
+      setSelectedRecipeForComments((prev) => ({
+        ...prev,
+        comments: prev.comments.filter((c) => c._id !== commentId),
+      }));
+      // Also update the recipes list so that the comment count is updated there
+        setUserRecipes((prevRecipes) =>
+          prevRecipes.map((r) =>
+            r._id === recipeId ? { ...r, comments: r.comments.filter((c) => c._id !== commentId) } : r
+        )
+      );
+    }
+  };
+
   // Get the authenticated user's name from auth
   const authUser = auth.isAuthenticated() && auth.isAuthenticated().user;
 
@@ -193,6 +253,9 @@ export default function AdminDashboard() {
                   </Button>
                   <Button variant="outlined" onClick={() => openPasswordDialog(user)} sx={{ mr: 1 }}>
                     Reset Password
+                  </Button>
+                  <Button variant="outlined" onClick={() => handleShowRecipes(user)} sx={{ mr: 1 }}>
+                    Recipe List
                   </Button>
                   {user.admin ? (
                     <Button variant="outlined" onClick={() => handleRemoveAdmin(user)}>
@@ -276,6 +339,85 @@ export default function AdminDashboard() {
           </Button>
           <Button onClick={handleUpdatePassword} color="primary">
             Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Recipe List Dialog */}
+      <Dialog open={recipeDialogOpen} onClose={() => setRecipeDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>{recipeUser ? `${recipeUser.name}'s Recipes` : "Recipes"}</DialogTitle>
+        <DialogContent>
+          {userRecipes.length === 0 ? (
+            <Typography>No recipes found.</Typography>
+          ) : (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Comment Count</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {userRecipes.map((recipe) => (
+                  <TableRow key={recipe._id}>
+                    <TableCell>
+                      <Button variant="text" onClick={() => openCommentDialog(recipe)}>
+                        {recipe.title}
+                      </Button>
+                    </TableCell>
+                    <TableCell>{recipe.comments ? recipe.comments.length : 0}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRecipeDialogOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+       {/* Comment Dialog */}
+       <Dialog open={commentDialogOpen} onClose={closeCommentDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Comments for {selectedRecipeForComments && selectedRecipeForComments.title}
+        </DialogTitle>
+        <DialogContent>
+          {selectedRecipeForComments && selectedRecipeForComments.comments && selectedRecipeForComments.comments.length > 0 ? (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Comment</TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {selectedRecipeForComments.comments.map((comment) => (
+                  <TableRow key={comment._id}>
+                    <TableCell>{comment.text}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() =>
+                          handleDeleteComment(selectedRecipeForComments._id, comment._id)
+                        }
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <Typography>No comments found.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeCommentDialog} color="primary">
+            Close
           </Button>
         </DialogActions>
       </Dialog>
