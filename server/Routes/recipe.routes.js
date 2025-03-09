@@ -22,6 +22,9 @@ router.route('/api/recipes/:recipeId')
   .put(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.updateRecipe)
   .delete(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.deleteRecipe)
 
+// NEW: Add a comment to a specific recipe
+router.route('/api/recipes/:recipeId/comments')
+  .post(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.addComment)
 
 router.param('recipeId', recipeCtrl.recipeByID)
 

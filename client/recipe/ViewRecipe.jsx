@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ThemeProvider,
@@ -15,6 +15,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  TextField, // <-- Make sure to import TextField
+  Rating // <-- Import the Rating component
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
@@ -45,6 +47,16 @@ export default function ViewRecipe() {
   const [isCreator, setIsCreator] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   
+  // NEW: For adding comments (name, email, comment text, rating)
+  // const [commentName, setCommentName] = useState("");
+  // const [commentEmail, setCommentEmail] = useState("");
+  const [commentText, setCommentText] = useState("");
+  const [commentRating, setCommentRating] = useState(0);
+
+  // For validation error dialog
+  const [validationErrorDialogOpen, setValidationErrorDialogOpen] = useState(false);
+  const [validationErrorMessage, setValidationErrorMessage] = useState("");
+  const [validationErrorField, setValidationErrorField] = useState(""); // "comment" or "rating"
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,6 +80,14 @@ const getImageUrl = useCallback((recipeData) => {
     }
     return defaultRecipeImage;
   }, []);
+
+  // Get current signed in user from auth helper
+  const jwt = auth.isAuthenticated();
+  const currentUser = jwt ? jwt.user : {};
+
+  // Refs for fields
+  const commentRef = useRef(null);
+  const ratingRef = useRef(null);
 
   // Helper function to convert ArrayBuffer to Base64
   const arrayBufferToBase64 = (buffer) => {
@@ -109,6 +129,7 @@ const getImageUrl = useCallback((recipeData) => {
       const data = await response.json();
       setRecipe(data);
 
+      // Check if current user is the creator or an admin
       setIsCreator(jwt.user.name === data.creator);
       setIsAdmin(jwt.user.role === 'admin');
       
@@ -164,6 +185,75 @@ const getImageUrl = useCallback((recipeData) => {
     }
     setDeleteDialog(false);
   }, [recipeId, navigate, from]);
+
+  // NEW: Handle submit comment
+  const handleSubmitComment = async () => {
+    // Reset previous error
+    setValidationErrorMessage("");
+    // Validate comment text
+    if (!commentText.trim()) {
+      setValidationErrorMessage("Comment cannot be empty.");
+      setValidationErrorField("comment");
+      setValidationErrorDialogOpen(true);
+      return;
+    }
+    // Validate rating (at least 1 star)
+    if (!commentRating || commentRating < 1) {
+      setValidationErrorMessage("Please provide a rating at least 1 star.");
+      setValidationErrorField("rating");
+      setValidationErrorDialogOpen(true);
+      return;
+    }
+    try {
+      const jwt = auth.isAuthenticated();
+      if (!jwt) {
+        throw new Error("User not authenticated");
+      }
+
+       // POST to your backend endpoint for adding a comment
+       const response = await fetch(`/api/recipes/${recipeId}/comments`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + jwt.token,
+        },
+        body: JSON.stringify({
+          name: currentUser.name,
+          email: currentUser.email,
+          text: commentText,
+          rating: commentRating,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to post comment");
+      }
+
+      // Expect the updated recipe with new comment in the response
+      const updatedRecipe = await response.json();
+      setRecipe(updatedRecipe);
+      // Clear the form
+      // setCommentName("");
+      // setCommentEmail("");
+      setCommentText("");
+      setCommentRating(0);
+    } catch (err) {
+      console.error("Error posting comment:", err);
+      setError("Failed to post comment. Please try again later.");
+    }
+  };
+
+  // Called when error dialog is closed; focuses the appropriate field.
+  const handleValidationErrorDialogClose = () => {
+    setValidationErrorDialogOpen(false);
+    if (validationErrorField === "comment" && commentRef.current) {
+      commentRef.current.focus();
+    } else if (validationErrorField === "rating" && ratingRef.current) {
+      // Focus the rating component if possible. If not, fallback to comment.
+      ratingRef.current.focus?.() || commentRef.current.focus();
+    }
+  };
 
   if (loading) {
     return (
@@ -344,6 +434,124 @@ const getImageUrl = useCallback((recipeData) => {
           )}
         </Box>
 
+        {/* Comments Section */}
+        <Box
+          sx={{
+            maxWidth: 800,
+            mx: 'auto',
+            mt: 3,
+            p: 2,
+            bgcolor: 'white',
+            borderRadius: '8px',
+            border: '1px solid #e0e0e0',
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Comments
+          </Typography>
+
+          {/* Display existing comments (if any) */}
+          {recipe.comments && recipe.comments.length > 0 ? (
+            recipe.comments.map((comment, index) => (
+              <Box
+                key={index}
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '4px',
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {comment.name} &mdash; {comment.email}
+                </Typography>
+                {/* Display star rating if it exists */}
+                <Rating
+                  name="read-only"
+                  value={comment.rating || 0}
+                  readOnly
+                  size="small"
+                />
+                <Typography variant="body2" sx={{ whiteSpace: 'pre-line', mt: 1 }}>
+                  {comment.text}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {new Date(comment.createdAt).toLocaleString()}
+                </Typography>
+              </Box>
+            ))
+          ) : (
+            <Typography>No comments yet.</Typography>
+          )}
+
+          {/* Only show "Leave a Comment" form if NOT the recipe owner */}
+          {!isCreator && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Leave a Comment
+              </Typography>
+
+              <TextField
+                fullWidth
+                label="Name"
+                value={currentUser.name || ""}
+                disabled
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                value={currentUser.email || ""}
+                disabled
+                sx={{ mb: 2 }}
+              />
+              {/* Star Rating */}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Typography sx={{ mr: 1 }}>Rating:</Typography>
+                <Rating
+                  ref={ratingRef}
+                  name="recipe-rating"
+                  value={commentRating}
+                  onChange={(event, newValue) => {
+                    setCommentRating(newValue);
+                  }}
+                  max={5}
+                />
+              </Box>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Comment"
+                inputRef={commentRef}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Button variant="contained" onClick={handleSubmitComment}>
+                Submit
+              </Button>
+            </Box>
+          )}
+        </Box>
+
+          {/* Validation Error Dialog */}
+        <Dialog open={validationErrorDialogOpen} onClose={handleValidationErrorDialogClose}>
+          <DialogTitle>Error</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {validationErrorMessage}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleValidationErrorDialogClose} autoFocus>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+         {/* Delete Confirmation Dialog */}  
         <Dialog
           open={deleteDialog}
           onClose={() => setDeleteDialog(false)}
@@ -359,6 +567,87 @@ const getImageUrl = useCallback((recipeData) => {
             <Button onClick={confirmDelete} color="error">Delete</Button>
           </DialogActions>
         </Dialog>
+        {/* ----------------------- COMMENTS SECTION -----------------------
+        <Box
+          sx={{
+            maxWidth: 800,
+            mx: 'auto',
+            mt: 3,
+            p: 2,
+            bgcolor: 'white',
+            borderRadius: '8px',
+            border: '1px solid #e0e0e0',
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Comments
+          </Typography> */}
+
+          {/* Display existing comments (if any) */}
+          {/* {recipe.comments && recipe.comments.length > 0 ? (
+            recipe.comments.map((comment, index) => (
+              <Box
+                key={index}
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '4px',
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {comment.authorName}
+                </Typography>
+                <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                  {comment.text}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {new Date(comment.createdAt).toLocaleString()}
+                </Typography>
+              </Box>
+            ))
+          ) : (
+            <Typography>No comments yet.</Typography>
+          )} */}
+
+          {/* Only show "Leave a Comment" form if NOT the recipe owner */}
+          {/* {!isCreator && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Leave a Comment
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Write your comment here..."
+                sx={{ mb: 1 }}
+              />
+              <Button variant="contained" onClick={handleSubmitComment}>
+                Submit
+              </Button>
+            </Box>
+          )}
+        </Box> */}
+        {/* ----------------------- END COMMENTS SECTION ----------------------- */}
+
+        {/* <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
+          <DialogTitle>Delete Recipe</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this recipe? This action cannot be
+              undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
+            <Button onClick={confirmDelete} color="error">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog> */}
   </Box>
 </ThemeProvider>
 );
