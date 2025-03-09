@@ -367,7 +367,6 @@ export default function Signin() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid2>
         <Grid2
           item
           xs={12}
@@ -390,6 +389,7 @@ export default function Signin() {
             src={loginpage}
           />
         </Grid2>
+      </Grid2>  
        {/* Secret Icon in the lower-left corner */}
        {/* <Box
         sx={{
