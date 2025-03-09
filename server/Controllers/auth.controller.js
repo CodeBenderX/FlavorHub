@@ -39,6 +39,7 @@ const requireSignin = expressjwt({
     algorithms: ["HS256"],
     userProperty: 'auth'
     })
+
     
     const setUser = async (req, res, next) => {
         if (req.auth && req.auth._id && req.auth.name) {
