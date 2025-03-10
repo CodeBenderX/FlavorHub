@@ -26,6 +26,18 @@ router.route('/api/recipes/:recipeId')
 router.route('/api/recipes/:recipeId/comments')
   .post(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.addComment)
 
+router.route('/api/recipes/creator/:name')
+  .get(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.getRecipesByCreator);
+
+
+router.route('/api/recipes/:recipeId/comments/:commentId')
+  .delete(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.deleteComment)
+  .put(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.updateComment);
+
+// New route to get all comments by a user's email
+router.route('/api/comments/byuser/:email')
+  .get(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.getCommentsByUser);
+
 router.param('recipeId', recipeCtrl.recipeByID)
 
 export default router

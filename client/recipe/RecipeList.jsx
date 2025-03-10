@@ -224,14 +224,14 @@ export default function RecipeList() {
   }
 
   return (
-    <div style={{height: '100vh', backgroundColor:'#FFF4EA'}}>
+    <div style={{height: '100vh', backgroundColor:'#F9F9F9'}}>
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography
           variant="h2"
           component="h1"
           sx={{
             textAlign: "center",
-            color: "#FF5722",
+            color: "#DA3743",
             mb: 4,
             fontWeight: "bold",
           }}

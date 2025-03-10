@@ -169,7 +169,7 @@ const AddRecipePage = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "#FFF4EA" }}>
+    <div style={{ backgroundColor: "#F9F9F9" }}>
       <Container component="main" maxWidth="sm" sx={{ py: 4 }}>
         <Typography
           variant="h3"

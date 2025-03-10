@@ -238,7 +238,7 @@ const UserAccount = () => {
         gap: 3,
         paddingBottom: 10,
         paddingTop: 10,
-        backgroundColor: "#FFF4EA"
+        backgroundColor: "#F9F9F9"
       }}
     >
       <Card sx={{ maxWidth: 500, width: "100%" }}>

@@ -281,7 +281,7 @@ const getImageUrl = useCallback((recipeData) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ maxWidth: '100%', bgcolor: '#fff1e7', minHeight: '100vh', py: 4 }}>
+      <Box sx={{ maxWidth: '100%', bgcolor: '#F9F9F9', minHeight: '100vh', py: 4 }}>
         <Typography
           variant="h1"
           sx={{
