@@ -190,9 +190,9 @@ export default function AboutPage() {
             gutterBottom
             sx={{ color: "#4A4A4A" }}
           >
-            ★ Meet the Team:{" "}
-            <span style={{ color: "#FF7043", fontWeight: "bold" }}>
-              Pseudo Squad
+            ★ Meet {" "}
+            <span style={{ color: "red", fontWeight: "bold" }}>
+              Team 2
             </span>
           </Typography>
 
