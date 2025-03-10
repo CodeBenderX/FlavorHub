@@ -5,7 +5,7 @@ import {
   TextField,
   Typography,
   Button,
-  Grid,
+  Grid2,
   Box,
   Dialog,
   DialogTitle,
@@ -78,11 +78,12 @@ export default function Signin() {
   // New state for the success dialog:
   const [resetSuccessDialogOpen, setResetSuccessDialogOpen] = useState(false);
 
-  // Admin login modal state
-  const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminPassword, setAdminPassword] = useState("");
-  const [adminError, setAdminError] = useState("");
+   // Admin login modal state
+  //  const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
+  //  const [adminEmail, setAdminEmail] = useState("");
+  //  const [adminPassword, setAdminPassword] = useState("");
+  //  const [adminError, setAdminError] = useState("");
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,6 +99,7 @@ export default function Signin() {
     };
 
     signin(user).then((data) => {
+      console.log("Signin response:", data);
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -249,53 +251,43 @@ export default function Signin() {
     navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
   };
 
-  // Handler for the secret icon double-click: open admin login modal
-  const handleSecretIconDoubleClick = () => {
-    // Reset admin login state
-    setAdminEmail("");
-    setAdminPassword("");
-    setAdminError("");
-    setAdminLoginDialogOpen(true);
-  };
+// Handler for the secret icon double-click: open admin login modal
+// const handleSecretIconDoubleClick = () => {
+//   // Reset admin login state
+//   setAdminEmail("");
+//   setAdminPassword("");
+//   setAdminError("");
+//   setAdminLoginDialogOpen(true);
+// };
 
-  // Handler for admin login form submission
-  const handleAdminLoginSubmit = async () => {
-    setAdminError("");
-    // Call your signin API with admin credentials
-    const data = await signin({ email: adminEmail, password: adminPassword });
-    if (data.error) {
-      setAdminError(data.error);
-    } else {
-      // Check if the signed-in user has an admin role
-      if (data.user.role !== "admin") {
-        setAdminError("Access denied. Not an admin account.");
-        auth.clearJWT();
-      } else {
-        auth.authenticate(data, () => {
-          setAdminLoginDialogOpen(false);
-          navigate("/admin/dashboard"); // Adjust this route as needed
-        });
-      }
-    }
-  };
-
-  const [imageLoaded, setImageLoaded] = useState(false);
+// Handler for admin login form submission
+// const handleAdminLoginSubmit = async () => {
+//   setAdminError("");
+//   // Call your signin API with admin credentials
+//   const data = await signin({ email: adminEmail, password: adminPassword });
+//   if (data.error) {
+//     setAdminError(data.error);
+//   } else {
+//     // Check if the signed-in user has an admin role
+//     if (data.user.role !== "admin") {
+//       setAdminError("Access denied. Not an admin account.");
+//       auth.clearJWT();
+//     } else {
+//       auth.authenticate(data, () => {
+//         setAdminLoginDialogOpen(false);
+//         navigate("/admin/dashboard"); // Adjust this route as needed
+//       });
+//     }
+//   }
+// }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        bgcolor: "#FFF4F0",
-      }}
-    >
-      <Grid container spacing={0} sx={{ maxWidth: "100%" }}>
-        <Grid item xs={12} md={6}>
-          <Card sx={useStyles.card}>
-            <CardContent>
-              <Typography variant="h6" sx={useStyles.title}>
-                Login
+    <div style={{ backgroundColor: "#FFFFFF", height: "100vh" }}>
+      <Grid2 container spacing={0} sx={{ maxWidth: '100%'}}>
+        <Card sx={useStyles.card}>
+          <CardContent>
+            <Typography variant="h6" sx={useStyles.title}>
+              Login
               </Typography>
               <TextField
                 id="email"
@@ -375,8 +367,7 @@ export default function Signin() {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid
+        <Grid2
           item
           xs={12}
           md={6}
@@ -397,10 +388,10 @@ export default function Signin() {
             alt="Healthy food"
             src={loginpage}
           />
-        </Grid>
-      </Grid>
-      {/* Secret Icon in the lower-left corner */}
-      <Box
+        </Grid2>
+      </Grid2>  
+       {/* Secret Icon in the lower-left corner */}
+       {/* <Box
         sx={{
           position: "fixed",
           left: 20,
@@ -413,7 +404,7 @@ export default function Signin() {
         <IconButton>
           <PrivacyTipIcon sx={{ color: "gray", fontSize: 30 }} />
         </IconButton>
-      </Box>
+      </Box> */}
       {/* Forgot Password Modal */}
       <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
         <DialogTitle>Reset Password</DialogTitle>
@@ -514,8 +505,8 @@ export default function Signin() {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Admin Login Modal */}
-      <Dialog
+       {/* Admin Login Modal */}
+       {/* <Dialog
         open={adminLoginDialogOpen}
         onClose={() => setAdminLoginDialogOpen(false)}
       >
@@ -548,7 +539,7 @@ export default function Signin() {
             Login
           </Button>
         </DialogActions>
-      </Dialog>
-    </Box>
+      </Dialog> */}
+    </div>
   );
 }

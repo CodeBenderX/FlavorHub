@@ -253,5 +253,32 @@ const remove = async (req, res) => {
   }
 };
 
+// Controllers/recipe.controller.js (example)
+const addComment = async (req, res) => {
+  try {
+    const recipe = req.recipe; // because of recipeByID
+    const { name, email, text, rating } = req.body;
+
+    // Build the new comment object
+    const newComment = {
+      name,
+      email,
+      text,
+      rating: rating || 0,
+      createdAt: new Date()
+    };
+
+    // Push to recipe's comments array
+    recipe.comments.push(newComment);
+    await recipe.save();
+
+    return res.json(recipe); // return updated recipe
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({ error: 'Could not add comment' });
+  }
+};
+
+
 export default { createRecipe, getAllRecipes, updateRecipe, deleteRecipe, read, defaultPhoto, photo, recipeByID, updateCreator, deleteUserRecipes,
-  transferRecipesToAdmin, remove };
+  transferRecipesToAdmin, remove, addComment };
