@@ -28,7 +28,7 @@ export default function Footer() {
           align="center"
           gutterBottom
         >
-          &copy; {new Date().getFullYear()} FreshPlate. All rights reserved.
+          &copy; {new Date().getFullYear()} FlavorHub. All rights reserved.
         </Typography>
         <Box>
           <Typography

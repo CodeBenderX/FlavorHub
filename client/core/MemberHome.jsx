@@ -16,7 +16,7 @@ import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import auth from "../lib/auth-helper";
 import { list } from '../recipe/api-recipe';
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
-import burger from "../src/assets/BurgerHero1.png";
+import waffleImage from "../src/assets/waffle-registeredhome-small.png";
 
 const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -314,7 +314,7 @@ export default function MemberHome() {
 
 
   return (
-    <div style={{ backgroundColor: "#FFF4EA" }}>
+    <div style={{ backgroundColor: "#f9f9f9" }}>
       <Container component="main" maxWidth="lg" sx={{ width: "80%" }}>
         <section>
           <Typography variant="h2" component="h1" gutterBottom>
@@ -433,10 +433,12 @@ export default function MemberHome() {
               fullWidth
               sx={{
                 mt: 2,
-                border: "1px solid #000000",
-                backgroundColor: "#000000",
+                border: "1px solid #DA3743",
+                color: "#DA3743",
+                backgroundColor: "transparent",
                 "&:hover": {
-                  backgroundColor: "#FFFFFF",
+                  color: "#DA3743",
+                  backgroundColor: "transparent",
                 },
               }}
             >
@@ -497,8 +499,8 @@ export default function MemberHome() {
                 objectPosition: "center",
                 transform: "scaleX(1.2)",
               }}
-              image={burger}
-              alt="Delicious burger with fresh vegetables"
+              image={waffleImage}
+              alt="Delicious waffle with fresh fruits"
             />
           </Card>
         </section>
