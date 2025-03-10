@@ -1,3 +1,5 @@
+import auth from "../lib/auth-helper";
+
 const create = async (credentials, recipe) => {
   try {
     let response = await fetch('/api/recipes/', {
@@ -145,6 +147,47 @@ const transferRecipesToAdmin = async (params, credentials) => {
   }
 };
 
+// Update a comment on a recipe
+const updateRecipeComment = async (recipeId, commentId, { text, rating }) => {
+  try {
+    const response = await fetch(`/api/recipes/${recipeId}/comments/${commentId}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.isAuthenticated().token}`,
+        //'Authorization': 'Bearer ' + credentials.t
+      },
+      body: JSON.stringify({ text, rating }),
+    });
+    return await response.json();
+  } catch (err) {
+    return { error: "Could not update comment" };
+  }
+};
+
+// Delete a comment from a recipe
+const deleteRecipeComment = async (recipeId, commentId) => {
+  try {
+    const response = await fetch(`/api/recipes/${recipeId}/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.isAuthenticated().token}`,
+        //'Authorization': 'Bearer ' + credentials.t
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      // Throw an error with details returned by the server
+      throw new Error(data.error || "Could not delete comment");
+    }
+    return data;
+  } catch (err) {
+    return { error: err.message || "Could not delete comment" };
+  }
+};
 
 
-export { create, list, read, update, remove, updateRecipeCreators, deleteUserRecipes, transferRecipesToAdmin }
+export { create, list, read, update, remove, updateRecipeCreators, deleteUserRecipes, transferRecipesToAdmin, updateRecipeComment, deleteRecipeComment }
