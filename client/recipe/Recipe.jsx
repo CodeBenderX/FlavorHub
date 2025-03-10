@@ -208,7 +208,7 @@ export default function RecipeList() {
         component="h1"
         sx={{
           textAlign: 'center',
-          color: '#FF5722',
+          color: '#DA3743',
           mb: 4,
           fontWeight: 'bold',
         }}
