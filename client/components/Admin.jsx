@@ -57,7 +57,6 @@ export default function AdminDashboard() {
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [selectedRecipeForComments, setSelectedRecipeForComments] = useState(null);
 
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -248,6 +247,22 @@ export default function AdminDashboard() {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.admin ? "Yes" : "No"}</TableCell>
                 <TableCell>
+                {user.name === "Admin" ? (
+                    // Super admin: only allow read-only action, e.g. view recipes
+                    <>
+                      <Button
+                        variant="outlined"
+                        onClick={() => handleShowRecipes(user)}
+                        sx={{ mr: 1 }}
+                      >
+                        Recipe List
+                      </Button>
+                      <Typography variant="caption" sx={{ ml: 1 }}>
+                        Super Admin
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
                   <Button variant="outlined" onClick={() => openSecurityDialog(user)} sx={{ mr: 1 }}>
                     Reset Security Q/A
                   </Button>
@@ -258,14 +273,23 @@ export default function AdminDashboard() {
                     Recipe List
                   </Button>
                   {user.admin ? (
-                    <Button variant="outlined" onClick={() => handleRemoveAdmin(user)}>
-                      Remove as Admin
-                    </Button>
+                    // If the user is admin, check if it is the current logged in admin.
+                    user._id === authUser._id ? (
+                      <Typography variant="caption" sx={{ ml: 1 }}>
+                        Current Logged In Admin
+                      </Typography>
+                    ) : (
+                      <Button variant="outlined" onClick={() => handleRemoveAdmin(user)}>
+                        Remove as Admin
+                      </Button>
+                    )
                   ) : (
                     <Button variant="outlined" onClick={() => handleSetAdmin(user)}>
                       Set as Admin
                     </Button>
                   )}
+                  </>
+                )}
                 </TableCell>
               </TableRow>
             ))}
