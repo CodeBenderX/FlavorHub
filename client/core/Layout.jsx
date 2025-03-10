@@ -104,6 +104,13 @@ export default function Layout() {
               >
                 Recipes
               </Button>
+              <Button 
+              component={Link} 
+              to="/usercomments" 
+              color="inherit" 
+              style={isActive(location, "comments")}>
+                Comments
+              </Button>
               <Button
                 component={Link}
                 to="/about"

@@ -19,6 +19,7 @@ import RecipeList from "./recipe/RecipeList.jsx";
 import ContactUsPage from "./components/Contact.jsx";
 import EditRecipe from "./recipe/EditRecipe.jsx";
 import ViewRecipe from "./recipe/ViewRecipe.jsx";
+import UserComments from "./recipe/UserComments.jsx";
 import Admin from "./components/Admin.jsx";
 
 export default function MainRouter() {
@@ -33,6 +34,7 @@ export default function MainRouter() {
         <Route path="/viewrecipe" element={<ViewRecipe />} />
         <Route path="/editrecipe" element={<EditRecipe />} />
         <Route path="/recipelist" element={<RecipeList />} />
+        <Route path="/usercomments" element={<UserComments />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/account" element={<MyAccount />} />
         <Route path="/signin" element={<Signin />} />
