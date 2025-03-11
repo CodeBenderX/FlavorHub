@@ -454,8 +454,10 @@ export default function EditRecipe() {
     instructions: '',
     preptime: '',
     cooktime: '',
-    image: null
+    //image: null
   });
+  // newImage holds the File if user selects a new image
+  const [newImage, setNewImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
@@ -538,13 +540,22 @@ export default function EditRecipe() {
         throw new Error("Failed to fetch recipe data");
       }
       //setRecipe(data);
-      setRecipe(prevRecipe => ({
-        ...prevRecipe,
-        ...data,
+      // setRecipe(prevRecipe => ({
+      //   ...prevRecipe,
+      //   ...data,
+      //   preptime: data.preptime || '',
+      //   cooktime: data.cooktime || '',
+      //   servings: data.servings || ''
+      // }));
+      // update text fields; note that we don't store the original image in state
+      setRecipe({
+        title: data.title || '',
+        ingredients: data.ingredients || '',
+        instructions: data.instructions || '',
         preptime: data.preptime || '',
         cooktime: data.cooktime || '',
         servings: data.servings || ''
-      }));
+      });
       setImagePreview(getImageUrl(data));
     } catch (err) {
       console.error('Error fetching recipe:', err);
@@ -570,10 +581,12 @@ export default function EditRecipe() {
   const handleImageChange = useCallback((e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setRecipe(prevRecipe => ({
-        ...prevRecipe,
-        image: file
-      }));
+      // setRecipe(prevRecipe => ({
+      //   ...prevRecipe,
+      //   image: file
+      // }));
+      // setImagePreview(URL.createObjectURL(file));
+      setNewImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
   }, []);
@@ -588,17 +601,52 @@ export default function EditRecipe() {
       }
 
       const formData = new FormData();
+      // Object.keys(recipe).forEach(key => {
+      //   if (key === 'image') {
+      //     if (recipe[key] instanceof File) {
+      //       formData.append('image', recipe[key]);
+      //     } else if (recipe[key] === null) {
+      //       formData.append('deleteImage', 'true');
+      //     }
+      //   } else {
+      //     formData.append(key, recipe[key]);
+      //   }
+      // });
+
+      // const updatedRecipe = await update(
+      //   { recipeId: recipeId },
+      //   { t: jwt.token },
+      //   formData
+      // );
+
+      // if (!updatedRecipe) {
+      //   throw new Error('Failed to update recipe');
+      // }
+
+      // if (updatedRecipe.error) {
+      //   throw new Error(updatedRecipe.error);
+      // }
+      // Only append the image if it's a new file.
+      // Object.keys(recipe).forEach(key => {
+      //   if (key === 'image') {
+      //     if (recipe.image instanceof File) {
+      //       formData.append('image', recipe.image);
+      //     } else if (recipe.image === null) {
+      //       formData.append('deleteImage', 'true');
+      //     }
+      //     // Do not append the image field if it is the original object.
+      //   } else {
+      //     formData.append(key, recipe[key]);
+      //   }
+      // });
+      // append all text fields
       Object.keys(recipe).forEach(key => {
-        if (key === 'image') {
-          if (recipe[key] instanceof File) {
-            formData.append('image', recipe[key]);
-          } else if (recipe[key] === null) {
-            formData.append('deleteImage', 'true');
-          }
-        } else {
-          formData.append(key, recipe[key]);
-        }
+        formData.append(key, recipe[key]);
       });
+      // append new image file if the user selected one
+      if (newImage instanceof File) {
+        formData.append('image', newImage);
+      }
 
       const updatedRecipe = await update(
         { recipeId: recipeId },
