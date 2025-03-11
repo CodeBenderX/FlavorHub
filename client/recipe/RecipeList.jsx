@@ -78,6 +78,9 @@ export default function RecipeList() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Get the current user
+  const currentUser = auth.isAuthenticated()?.user || {};
+
   // NEW: Read the "creator" query parameter from the URL
   const params = new URLSearchParams(location.search);
   const creatorQuery = params.get("creator");
@@ -263,6 +266,9 @@ export default function RecipeList() {
           </Typography>
         )}
 
+        {/* If a creatorQuery exists and doesn't match the current user, 
+            we hide the "Add New Recipe" button. */}
+        {(!creatorQuery || creatorQuery === currentUser.name) && (
         <Link to="/addrecipe" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
@@ -278,6 +284,7 @@ export default function RecipeList() {
             Add New Recipe
           </Button>
         </Link>
+        )}
 
         {recipes.length === 0 ? (
           <Typography variant="body1" sx={{ textAlign: "center", mt: 4 }}>
@@ -305,9 +312,9 @@ export default function RecipeList() {
                       alt={recipe.title}
                       sx={{ width: 60, height: 60 }}
                       variant="rounded"
-                      imgProps={{
-                        onError: () => handleImageError(recipe._id),
-                      }}
+                      // imgProps={{
+                      //   onError: () => handleImageError(recipe._id),
+                      // }}
                     />
                   ) : (
                     <Avatar
