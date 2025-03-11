@@ -108,15 +108,16 @@ export default function Layout() {
               component={Link} 
               to="/usercomments" 
               color="inherit" 
-              style={isActive(location, "comments")}>
-                Comments
+              style={isActive(location, "comments")}
+              >
+                {/* Comments
               </Button>
               <Button
                 component={Link}
                 to="/about"
                 color="inherit"
                 style={isActive(location, "/about")}
-              >
+              > */}
                 About Us
               </Button>
               <Button
