@@ -91,7 +91,7 @@ export default function RecipeList() {
 
   const handleViewRecipe = (recipeId) => {
     navigate(`/viewrecipe?id=${recipeId}`, {
-      state: { from: location.pathname },
+      state: { from: `${location.pathname}${location.search}`, },
     });
   };
 
