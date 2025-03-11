@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import {
   ThemeProvider,
   createTheme,
@@ -18,6 +18,7 @@ import {
   TextField, // <-- Make sure to import TextField
   Rating // <-- Import the Rating component
 } from '@mui/material';
+import Link from '@mui/material/Link';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -350,7 +351,14 @@ const getImageUrl = useCallback((recipeData) => {
 
           <Box sx={{ mb: 3 }}>
             <Typography color="text.secondary" sx={{ mb: 2 }}>
-              Posted by: {recipe.creator}
+              Posted by:{" "}
+              <Link
+                component={RouterLink}
+                to={`/recipelist?creator=${encodeURIComponent(recipe.creator)}`}
+                underline="hover"
+              >
+                {recipe.creator}
+              </Link>
             </Typography>
 
             <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
