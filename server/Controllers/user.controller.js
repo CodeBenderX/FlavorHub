@@ -16,7 +16,7 @@ const create = async (req, res) => {
 }
 const list = async (req, res) => {
     try {
-        let users = await User.find().select('name email updated created')
+        let users = await User.find().select('_id name email updated created admin')
         res.json(users)
     } catch (err) {
         return res.status(400).json({
@@ -72,4 +72,62 @@ const remove = async (req, res) => {
         })
     }
 }
-export default { create, userByID, read, list, remove, update }
+
+const setAdmin = async (req, res) => {
+    try {
+      let user = req.profile; // Assume userByID middleware has loaded the user
+      user.admin = req.body.admin; // Set admin field based on request body
+      await user.save();
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      res.json(user);
+    } catch (err) {
+      return res.status(400).json({
+        error: "Could not update admin status",
+      });
+    }
+  }
+  const updateSecurity = async (req, res) => {
+    try {
+      let user = req.profile; // Loaded via router.param
+      const { securityQuestion, securityAnswerPlain } = req.body;
+      if (!securityQuestion || !securityAnswerPlain) {
+        return res.status(400).json({ error: "Security question and answer are required." });
+      }
+      // Update the security question and use the virtual setter for securityAnswerPlain
+      user.securityQuestion = securityQuestion;
+      user.securityAnswerPlain = securityAnswerPlain;
+      user.updated = Date.now();
+      await user.save();
+      // Remove sensitive fields before sending the response
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      res.json({ message: "Security question and answer updated successfully", user });
+    } catch (err) {
+      return res.status(400).json({ error: "Could not update security question/answer" });
+    }
+  }
+  const updatePassword = async (req, res) => {
+    try {
+      let user = req.profile; // Loaded via router.param('userId', userCtrl.userByID)
+      const { password } = req.body;
+      if (!password) {
+        return res.status(400).json({ error: "Password is required." });
+      }
+      if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters." });
+      }
+      // Set the new password (using your virtual setter, which will update salt and hashed_password)
+      user.password = password;
+      user.updated = Date.now();
+      await user.save();
+      // Remove sensitive fields before sending the response
+      user.hashed_password = undefined;
+      user.salt = undefined;
+      res.json({ message: "Password updated successfully", user });
+    } catch (err) {
+      return res.status(400).json({ error: "Could not update password." });
+    }
+  }
+  
+export default { create, userByID, read, list, remove, update, setAdmin, updateSecurity, updatePassword }

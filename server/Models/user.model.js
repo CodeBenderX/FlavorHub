@@ -22,6 +22,18 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    securityQuestion: { 
+        type: String, 
+        required: true, 
+      },
+      securityAnswer: { 
+        type: String, 
+        required: 'Password is required', 
+      },
+      admin: { 
+        type: Boolean, 
+        default: false 
+    },
     // role: {
     //     type: String,
     //     enum: ['user', 'admin'],
@@ -31,6 +43,8 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: 'Password is required'
     },
+    // New field to store the salt for the security answer
+    securityAnswerSalt: String,
     salt: String
 });
 UserSchema.virtual('password')
@@ -44,6 +58,20 @@ UserSchema.virtual('password')
     .get(function () {
         return this._password;
     });
+
+// New virtual for security answer (plain text input)
+UserSchema.virtual('securityAnswerPlain')
+    .set(function (plainAnswer) {
+        this._securityAnswer = plainAnswer;
+        // Generate a salt specifically for the security answer
+        this.securityAnswerSalt = this.makeSalt();
+        // Hash and store the security answer
+        this.securityAnswer = this.encryptSecurityAnswer(plainAnswer);
+    })
+    .get(function () {
+        return this._securityAnswer;
+    });
+
 UserSchema.path('hashed_password').validate(function (v) {
     if (this._password && this._password.length < 6) {
         this.invalidate('password', 'Password must be at least 6 characters.');
@@ -65,6 +93,23 @@ UserSchema.methods = {
                 .digest('hex')
         } catch (err) {
             return ''
+        }
+    },
+    // Method to verify a provided security answer
+    authenticateSecurityAnswer: function (plainAnswer) {
+        return this.encryptSecurityAnswer(plainAnswer) === this.securityAnswer;
+    },
+     // New method to hash the security answer using its dedicated salt
+     encryptSecurityAnswer: function (answer) {
+        if (!answer) return '';
+        try {
+            const normalized = answer.trim().toLowerCase();
+            return crypto
+                .createHmac('sha1', this.securityAnswerSalt)
+                .update(normalized)
+                .digest('hex');
+        } catch (err) {
+            return '';
         }
     },
     makeSalt: function () {

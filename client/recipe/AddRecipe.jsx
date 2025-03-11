@@ -169,7 +169,7 @@ const AddRecipePage = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "#FFF4EA" }}>
+    <div style={{ backgroundColor: "#F9F9F9" }}>
       <Container component="main" maxWidth="sm" sx={{ py: 4 }}>
         <Typography
           variant="h3"
@@ -193,7 +193,7 @@ const AddRecipePage = () => {
 
             <form onSubmit={handleSubmit}>
               <TextField
-                label="Recipe Title*"
+                label="Recipe Title"
                 variant="outlined"
                 fullWidth
                 sx={{ mb: 2 }}
@@ -205,7 +205,7 @@ const AddRecipePage = () => {
               />
 
               <TextField
-                label="Ingredients*"
+                label="Ingredients"
                 variant="outlined"
                 fullWidth
                 multiline
@@ -219,7 +219,7 @@ const AddRecipePage = () => {
               />
 
               <TextField
-                label="Instructions*"
+                label="Instructions"
                 variant="outlined"
                 fullWidth
                 multiline

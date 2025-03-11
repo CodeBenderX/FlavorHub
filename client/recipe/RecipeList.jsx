@@ -78,13 +78,20 @@ export default function RecipeList() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Get the current user
+  const currentUser = auth.isAuthenticated()?.user || {};
+
+  // NEW: Read the "creator" query parameter from the URL
+  const params = new URLSearchParams(location.search);
+  const creatorQuery = params.get("creator");
+
   const handleEditRecipe = (recipeId) => {
     navigate(`/editrecipe?id=${recipeId}`);
   };
 
   const handleViewRecipe = (recipeId) => {
     navigate(`/viewrecipe?id=${recipeId}`, {
-      state: { from: location.pathname },
+      state: { from: `${location.pathname}${location.search}`, },
     });
   };
 
@@ -95,7 +102,13 @@ export default function RecipeList() {
       if (!jwt) {
         throw new Error("User not authenticated");
       }
-      const response = await fetch("/api/recipes", {
+      let url = "";
+      if (creatorQuery) {
+        url = `/api/recipes/creator/${encodeURIComponent(creatorQuery)}`;
+      } else {
+        url = "/api/recipes";
+      }
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -109,19 +122,26 @@ export default function RecipeList() {
       }
 
       const data = await response.json();
-      const userRecipes = data.filter(
-        (recipe) => recipe.creator === jwt.user.name
-      );
+      if (!creatorQuery) {
+        // Show only the logged in user's recipes if no creator query parameter exists
+        const userRecipes = data.filter(
+          (recipe) => recipe.creator === jwt.user.name
+        );
       setRecipes(userRecipes);
       setTotalPages(Math.ceil(userRecipes.length / itemsPerPage));
-      setError(null);
-    } catch (err) {
-      setError("Failed to load recipes. Please try again later.");
-      console.error("Error fetching recipes:", err);
-    } finally {
-      setLoading(false);
+    } else {
+      // Otherwise, show all recipes by the specified creator
+      setRecipes(data);
+      setTotalPages(Math.ceil(data.length / itemsPerPage));
     }
-  }, [itemsPerPage]);
+    setError(null);
+  } catch (err) {
+    setError("Failed to load recipes. Please try again later.");
+    console.error("Error fetching recipes:", err);
+  } finally {
+    setLoading(false);
+  }
+}, [itemsPerPage, creatorQuery, location.search]);
 
   useEffect(() => {
     fetchRecipes();
@@ -224,14 +244,14 @@ export default function RecipeList() {
   }
 
   return (
-    <div style={{height: '100vh', backgroundColor:'#FFF4EA'}}>
+    <div style={{height: '100vh', backgroundColor:'#F9F9F9'}}>
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography
           variant="h2"
           component="h1"
           sx={{
             textAlign: "center",
-            color: "#FF5722",
+            color: "#DA3743",
             mb: 4,
             fontWeight: "bold",
           }}
@@ -239,6 +259,16 @@ export default function RecipeList() {
           Recipes
         </Typography>
 
+        {/* 3. If a creator query exists, display a header showing recipes by that creator */}
+        {creatorQuery && (
+          <Typography variant="subtitle1" sx={{ mb: 3, textAlign: "center" }}>
+            Showing recipes by: <strong>{creatorQuery}</strong>
+          </Typography>
+        )}
+
+        {/* If a creatorQuery exists and doesn't match the current user, 
+            we hide the "Add New Recipe" button. */}
+        {(!creatorQuery || creatorQuery === currentUser.name) && (
         <Link to="/addrecipe" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
@@ -254,6 +284,7 @@ export default function RecipeList() {
             Add New Recipe
           </Button>
         </Link>
+        )}
 
         {recipes.length === 0 ? (
           <Typography variant="body1" sx={{ textAlign: "center", mt: 4 }}>
@@ -281,9 +312,9 @@ export default function RecipeList() {
                       alt={recipe.title}
                       sx={{ width: 60, height: 60 }}
                       variant="rounded"
-                      imgProps={{
-                        onError: () => handleImageError(recipe._id),
-                      }}
+                      // imgProps={{
+                      //   onError: () => handleImageError(recipe._id),
+                      // }}
                     />
                   ) : (
                     <Avatar
@@ -305,6 +336,10 @@ export default function RecipeList() {
                   >
                     View Recipe
                   </Button>
+                  {/* Only show Edit/Delete if the user is the recipe creator OR user is admin */}
+                  {(recipe.creator === auth.isAuthenticated().user.name ||
+                    auth.isAuthenticated().user.role === 'admin') && (
+                  <>
                   <IconButton
                     size="small"
                     sx={{ border: "1px solid #e0e0e0", borderRadius: "4px" }}
@@ -320,6 +355,8 @@ export default function RecipeList() {
                   >
                     <Delete fontSize="small" />
                   </IconButton>
+                  </>
+                )}
                 </Box>
               </Card>
             ))}

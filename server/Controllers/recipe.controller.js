@@ -253,5 +253,175 @@ const remove = async (req, res) => {
   }
 };
 
+// Controllers/recipe.controller.js (example)
+const addComment = async (req, res) => {
+  try {
+    const recipe = req.recipe; // because of recipeByID
+    const { name, email, text, rating } = req.body;
+
+    // Build the new comment object
+    const newComment = {
+      name,
+      email,
+      text,
+      rating: rating || 0,
+      createdAt: new Date()
+    };
+
+    // Push to recipe's comments array
+    recipe.comments.push(newComment);
+    await recipe.save();
+
+    return res.json(recipe); // return updated recipe
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({ error: 'Could not add comment' });
+  }
+};
+
+// const getRecipesByCreator = async (req, res) => {
+//   try {
+//     // Find recipes whose "creator" field matches req.params.name
+//     const recipes = await Recipe.find({ creator: req.params.name });
+//     res.json(recipes);
+//   } catch (err) {
+//     res.status(400).json({ error: "Could not fetch recipes" });
+//   }
+// };
+
+const getRecipesByCreator = async (req, res) => {
+  try {
+    let recipes = await Recipe.find({ creator: req.params.name })
+      .select("title ingredients instructions creator preptime cooktime servings image");
+
+    // Convert each recipe’s image buffer into a base64 string
+    recipes = recipes.map((recipe) => {
+      const recipeObj = recipe.toObject();
+      if (recipeObj.image && recipeObj.image.data) {
+        return {
+          ...recipeObj,
+          image: {
+            contentType: recipeObj.image.contentType,
+            data: recipeObj.image.data.toString("base64"),
+          },
+        };
+      }
+      return recipeObj;
+    });
+
+    res.json(recipes);
+  } catch (err) {
+    res.status(400).json({ error: "Could not fetch recipes" });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const { recipeId, commentId } = req.params;
+    console.log("Attempting deletion: recipe", recipeId, "comment", commentId);
+
+    // Find the recipe by its ID
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Find the comment subdocument by ID
+    const comment = recipe.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    // Authorization check: only allow deletion if the authenticated user's email matches the comment's email
+    if (req.auth.email !== comment.email) {
+      return res.status(403).json({ error: "User not authorized to delete this comment" });
+    }
+
+
+    // Use pull to remove the comment from the array
+    recipe.comments.pull(commentId);
+    await recipe.save();
+    return res.json({ message: "Comment deleted successfully", recipe });
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    return res.status(400).json({ error: "Could not delete comment", details: err.message });
+  }
+};
+
+const getCommentsByUser = async (req, res) => {
+  try {
+    const email = req.params.email;
+    // Find recipes that contain comments where the comment email matches
+    const recipes = await Recipe.find({ "comments.email": email });
+    let comments = [];
+    recipes.forEach(recipe => {
+      // Filter the recipe's comments for those made by the user
+      const userComments = recipe.comments.filter(comment => comment.email === email);
+      // For each comment, include the recipe title (for context)
+      userComments.forEach(comment => {
+        comments.push({
+          recipeId: recipe._id,
+          recipeTitle: recipe.title,
+          _id: comment._id,
+          name: comment.name,
+          email: comment.email,
+          text: comment.text,
+          rating: comment.rating,
+          createdAt: comment.createdAt,
+        });
+      });
+    });
+    res.json(comments);
+  } catch (err) {
+    console.error("Error fetching user comments:", err);
+    res.status(400).json({ error: "Could not fetch comments", details: err.message });
+  }
+};
+
+const updateComment = async (req, res) => {
+  try {
+    const { recipeId, commentId } = req.params;
+    const { text, rating } = req.body;
+    
+    // Validate the incoming data
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "Invalid comment data: text is required" });
+    }
+    // Optional: Validate rating (if required, here we assume rating must be between 0 and 5)
+    if (rating == null || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Invalid comment data: rating must be between 0 and 5" });
+    }
+
+    // Find the recipe by ID
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+    
+    // Find the comment subdocument by ID
+    const comment = recipe.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    // Authorization check: only allow update if the authenticated user's email matches the comment's email
+    if (req.auth.email !== comment.email) {
+      return res.status(403).json({ error: "User not authorized to update this comment" });
+    }
+    
+    // Update the comment properties
+    comment.text = text;
+    comment.rating = rating;
+    
+    // Save the recipe to persist changes
+    await recipe.save();
+    
+    res.json({ message: "Comment updated successfully", recipe });
+  } catch (err) {
+    console.error("Error updating comment:", err);
+    res.status(400).json({ error: "Could not update comment", details: err.message });
+  }
+};
+
 export default { createRecipe, getAllRecipes, updateRecipe, deleteRecipe, read, defaultPhoto, photo, recipeByID, updateCreator, deleteUserRecipes,
-  transferRecipesToAdmin, remove };
+  transferRecipesToAdmin, remove, addComment, getRecipesByCreator, deleteComment, getCommentsByUser, updateComment };

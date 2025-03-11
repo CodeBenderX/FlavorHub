@@ -5,7 +5,7 @@
 .MuiToolbar-root {
   display: flex;
   justify-content: space-between;
-  background-color: #fdfdfd;
+  background-color: #FFFFFF;
 }
 
 .MuiTypography-root {
@@ -15,6 +15,7 @@
 
 .MuiButton-root {
   color: black;
+  margin-left: 10px;
 }
 
 .MuiButton-text {
@@ -22,8 +23,8 @@
 }
 
 .MuiButton-root:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-  color: black;
+  background-color: rgba(222, 1, 1, 0.146);
+  color: black !important;
 }
 
 .MuiAppBar-root {

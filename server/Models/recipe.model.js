@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+const commentSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  text: String,
+  rating: Number,         // <-- store 1 to 5
+  createdAt: { type: Date, default: Date.now }
+});
+
 const recipeSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -39,7 +47,8 @@ const recipeSchema = new mongoose.Schema({
   updated: {
     type: Date,
     default: Date.now
-  }
+  },
+  comments: [commentSchema]
 });
 
 recipeSchema.pre('save', function(next) {

@@ -8,28 +8,26 @@ import logo from "../src/assets/FreshPlate-logo.png"; // Import FreshPlate logo
 import aboutAngelo from "../src/assets/Aboutus-Angelo.jpg";
 import aboutLorenzo from "../src/assets/Aboutus-Lorenzo.jpg";
 import aboutBianca from "../src/assets/Aboutus-Bianca.jpeg";
-import aboutOvo from "../src/assets/Aboutus-Ovo.jpeg";
+import aboutByron from "../src/assets/react.svg";
+import aboutKunai from "../src/assets/react.svg";
+import aboutBhuvnesh from "../src/assets/react.svg";
 
 export default function AboutPage() {
   return (
     // edited the width to make it ocuppy 80% of the page contained them in div so it will contain the background
-    <div style={{ backgroundColor: "#FFF5EB" }}>
+    <div style={{ backgroundColor: "#f9f9f9" }}>
       <Box sx={{ width: "80%", margin: "auto", padding: 4 }}>
         {" "}
         {/* Full-page layout */}
-        {/* Logo Above Heading */}
-        <Box sx={{ textAlign: "center", marginBottom: 2 }}>
-          <img src={logo} alt="FreshPlate Logo" style={{ width: 120 }} />
-        </Box>
         {/* About FreshPlate Heading */}
         <Typography
           variant="h3"
           component="h1"
           gutterBottom
           align="center"
-          sx={{ color: "#FF7043" }}
+          sx={{ color: "#DA3743" }}
         >
-          About FreshPlate
+          About <img src={logo} alt="FlavorHub Logo" style={{ width: 180 }} />
         </Typography>
         <Box
           sx={{
@@ -40,10 +38,13 @@ export default function AboutPage() {
           }}
         >
           <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
-            <strong>Welcome to FreshPlate</strong> – your ultimate destination
-            for all things cooking! Whether you're a seasoned chef or a beginner
-            in the kitchen, we’re here to inspire your culinary creativity and
-            help you make fresh, delicious meals from the comfort of your home.
+            Welcome to{" "}
+            <strong>
+              <span style={{ color: "#DA3743" }}>FlavorHub</span>
+            </strong>{" "}
+            – your ultimate culinary companion! Whether you're a seasoned chef
+            or a kitchen novice, we’re here to ignite your creativity and help
+            you craft fresh, delicious meals with ease.
           </Typography>
         </Box>
         {/* About FreshPlate Section */}
@@ -60,10 +61,14 @@ export default function AboutPage() {
             }}
           >
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
-              At FreshPlate, we believe that food should be fresh, fun, and easy
-              to create. That's why we’ve built a space where you can explore a
-              wide variety of recipes, share your own culinary creations, and
-              discover new ideas to elevate your cooking game.
+              At{" "}
+              <strong>
+                <span style={{ color: "#DA3743" }}>FlavorHub</span>
+              </strong>
+              , we believe cooking should be fresh, fun, and effortless. That’s
+              why we’ve created a space where you can explore diverse recipes,
+              share your own culinary masterpieces, and find inspiration to take
+              your cooking to the next level.
             </Typography>
             <br></br>
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
@@ -81,7 +86,12 @@ export default function AboutPage() {
               component="img"
               image={communityMeal}
               alt="Community Meal"
-              sx={{ borderRadius: "8px", maxWidth: "80%", height: "auto" }}
+              sx={{
+                borderRadius: "8px",
+                maxWidth: "80%",
+                height: "auto",
+                boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.58)",
+              }}
             />
           </Grid>
 
@@ -95,7 +105,12 @@ export default function AboutPage() {
               component="img"
               image={cookingTogether}
               alt="Cooking Together"
-              sx={{ borderRadius: "8px", maxWidth: "80%", height: "auto" }}
+              sx={{
+                borderRadius: "8px",
+                maxWidth: "80%",
+                height: "auto",
+                boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.58)",
+              }}
             />
           </Grid>
           <Grid
@@ -110,11 +125,14 @@ export default function AboutPage() {
             }}
           >
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
-              FreshPlate was born out of a love for home cooking and the desire
-              to make it easier for people to share and discover great food.
-              What started as a small idea to organize and share our favorite
-              recipes quickly grew into a platform where cooks of all levels
-              could contribute, learn, and grow together.
+              <strong>
+                <span style={{ color: "#DA3743" }}>FlavorHub</span>
+              </strong>{" "}
+              was born from a passion for home cooking and a desire to make
+              sharing and discovering great food effortless. What began as a
+              simple idea to organize our favorite recipes has evolved into a
+              vibrant platform where cooks of all levels can connect, learn, and
+              grow together.
             </Typography>
           </Grid>
 
@@ -138,7 +156,9 @@ export default function AboutPage() {
             <br></br>
             <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
               The kitchen is a place for everyone to explore and express
-              themselves, and FreshPlate is here to guide you along the way.
+              themselves, and <strong>
+                <span style={{ color: "#DA3743" }}>FlavorHub</span>
+              </strong>{" "} is here to guide you along the way.
             </Typography>
           </Grid>
           <Grid
@@ -151,7 +171,12 @@ export default function AboutPage() {
               component="img"
               image={familyCookingTogether}
               alt="Family Cooking Together"
-              sx={{ borderRadius: "8px", maxWidth: "80%", height: "auto" }}
+              sx={{
+                borderRadius: "8px",
+                maxWidth: "80%",
+                height: "auto",
+                boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.58)",
+              }}
             />
           </Grid>
         </Grid>
@@ -166,7 +191,7 @@ export default function AboutPage() {
             sx={{ color: "#4A4A4A" }}
           >
             ★ Meet the Team:{" "}
-            <span style={{ color: "#FF7043", fontWeight: "bold" }}>
+            <span style={{ color: "#DA3743", fontWeight: "bold" }}>
               Pseudo Squad
             </span>
           </Typography>
@@ -176,32 +201,53 @@ export default function AboutPage() {
             spacing={2}
             justifyContent="center"
             width={"100%"}
-            sx={{ marginTop: 3, paddingX: 4}}
+            sx={{ marginTop: 3, paddingX: 4 }}
           >
             {[
               {
                 name: "Angelo Tiquio",
-                role: "Lead Frontend Developer",
                 image: aboutAngelo,
               },
               {
                 name: "Lorenzo Menil Jr.",
-                role: "Lead Backend Developer",
                 image: aboutLorenzo,
               },
               {
                 name: "Bianca Salunga",
-                role: "QA/UI Designer",
                 image: aboutBianca,
               },
               {
-                name: "Ovovwero Unuavwodo",
-                role: "Frontend Developer",
-                image: aboutOvo,
+                name: "Byron Ho",
+                image: aboutByron,
+              },
+              {
+                name: "Kunai Chyngyzbekova",
+                image: aboutKunai,
+              },
+              {
+                name: "Bhuvnesh Bhardwaj",  
+                image: aboutBhuvnesh,
               },
             ].map((member, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Box sx={{ textAlign: "center", padding: 2, borderRadius: 2 }}>
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Box
+                  sx={{
+                    textAlign: "center",
+                    padding: 2,
+                    borderRadius: 2,
+                    opacity: 0,
+                    transform: "translateY(20px)",
+                    animation: "fadeInUp 0.6s ease-out forwards",
+                    "@keyframes fadeInUp": {
+                      "0%": { opacity: 0, transform: "translateY(20px)" },
+                      "100%": { opacity: 1, transform: "translateY(0)" },
+                    },
+                    transition: "transform 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
+                  }}
+                >
                   <Box
                     sx={{
                       width: 100,
