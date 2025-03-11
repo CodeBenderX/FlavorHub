@@ -279,10 +279,36 @@ const addComment = async (req, res) => {
   }
 };
 
+// const getRecipesByCreator = async (req, res) => {
+//   try {
+//     // Find recipes whose "creator" field matches req.params.name
+//     const recipes = await Recipe.find({ creator: req.params.name });
+//     res.json(recipes);
+//   } catch (err) {
+//     res.status(400).json({ error: "Could not fetch recipes" });
+//   }
+// };
+
 const getRecipesByCreator = async (req, res) => {
   try {
-    // Find recipes whose "creator" field matches req.params.name
-    const recipes = await Recipe.find({ creator: req.params.name });
+    let recipes = await Recipe.find({ creator: req.params.name })
+      .select("title ingredients instructions creator preptime cooktime servings image");
+
+    // Convert each recipe’s image buffer into a base64 string
+    recipes = recipes.map((recipe) => {
+      const recipeObj = recipe.toObject();
+      if (recipeObj.image && recipeObj.image.data) {
+        return {
+          ...recipeObj,
+          image: {
+            contentType: recipeObj.image.contentType,
+            data: recipeObj.image.data.toString("base64"),
+          },
+        };
+      }
+      return recipeObj;
+    });
+
     res.json(recipes);
   } catch (err) {
     res.status(400).json({ error: "Could not fetch recipes" });
