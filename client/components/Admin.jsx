@@ -30,10 +30,7 @@ import auth from "../lib/auth-helper";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState("");
-  
-  
-  
+  const [message, setMessage] = useState(""); 
 
   // Dialog states for security and password updates
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
