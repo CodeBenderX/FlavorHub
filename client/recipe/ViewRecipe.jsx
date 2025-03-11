@@ -24,6 +24,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import auth from "../lib/auth-helper";
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
+// UPDATED: Import API helper functions for updating and deleting comments.
+import { updateRecipeComment, deleteRecipeComment } from '../recipe/api-recipe';
 
 const theme = createTheme({
   typography: {
@@ -53,6 +55,12 @@ export default function ViewRecipe() {
   // const [commentEmail, setCommentEmail] = useState("");
   const [commentText, setCommentText] = useState("");
   const [commentRating, setCommentRating] = useState(0);
+
+   // NEW: States for editing a comment
+   const [editDialogOpen, setEditDialogOpen] = useState(false);
+   const [selectedComment, setSelectedComment] = useState(null);
+   const [editedText, setEditedText] = useState("");
+   const [editedRating, setEditedRating] = useState(0);
 
   // For validation error dialog
   const [validationErrorDialogOpen, setValidationErrorDialogOpen] = useState(false);
@@ -255,6 +263,70 @@ const getImageUrl = useCallback((recipeData) => {
       ratingRef.current.focus?.() || commentRef.current.focus();
     }
   };
+
+   // ===================== NEW COMMENT EDIT/DELETE FUNCTIONS =====================
+
+  // Called when the edit icon is clicked on a comment.
+  const handleEditClick = (comment) => {
+    setSelectedComment(comment);
+    setEditedText(comment.text);
+    setEditedRating(comment.rating || 0);
+    setEditDialogOpen(true);
+  };
+
+  // Updates the comment via the API.
+  const handleSaveComment = async () => {
+    if (!selectedComment || !recipeId) return;
+    try {
+      const jwt = auth.isAuthenticated();
+      const response = await updateRecipeComment(
+        recipeId,
+        selectedComment._id,
+        { text: editedText, rating: editedRating }
+      );
+      if (response.error) {
+        setError(response.error);
+      } else {
+        // Update the comment in the local state
+        setRecipe(prevRecipe => ({
+          ...prevRecipe,
+          comments: prevRecipe.comments.map(comment =>
+            comment._id === selectedComment._id
+              ? { ...comment, text: editedText, rating: editedRating }
+              : comment
+          )
+        }));
+        setEditDialogOpen(false);
+        setSelectedComment(null);
+      }
+    } catch (err) {
+      console.error("Error updating comment:", err);
+      setError("Failed to update comment.");
+    }
+  };
+
+  // Deletes a comment via the API.
+  const handleDeleteComment = async (comment) => {
+    if (!comment || !recipeId) return;
+    try {
+      const jwt = auth.isAuthenticated();
+      const response = await deleteRecipeComment(recipeId, comment._id);
+      if (response.error) {
+        setError(response.error);
+      } else {
+        // Remove the deleted comment from the local state
+        setRecipe(prevRecipe => ({
+          ...prevRecipe,
+          comments: prevRecipe.comments.filter(c => c._id !== comment._id)
+        }));
+      }
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      setError("Failed to delete comment.");
+    }
+  };
+
+  // ===================== END COMMENT EDIT/DELETE FUNCTIONS =====================
 
   if (loading) {
     return (
@@ -468,11 +540,23 @@ const getImageUrl = useCallback((recipeData) => {
                   p: 2,
                   border: '1px solid #e0e0e0',
                   borderRadius: '4px',
+                  position: 'relative', // Allows placing icons absolutely
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                   {comment.name} &mdash; {comment.email}
                 </Typography>
+                 {/* UPDATED: Show edit and delete icons if this comment belongs to the current user */}
+                 {currentUser.email === comment.email && (
+                    <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                      <IconButton onClick={() => handleEditClick(comment)} size="small">
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteComment(comment)} size="small">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  )}
                 {/* Display star rating if it exists */}
                 <Rating
                   name="read-only"
@@ -639,23 +723,36 @@ const getImageUrl = useCallback((recipeData) => {
             </Box>
           )}
         </Box> */}
-        {/* ----------------------- END COMMENTS SECTION ----------------------- */}
 
-        {/* <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)}>
-          <DialogTitle>Delete Recipe</DialogTitle>
+        {/* ===================== EDIT COMMENT DIALOG ===================== */}
+        <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+          <DialogTitle>Edit Comment</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this recipe? This action cannot be
-              undone.
-            </DialogContentText>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Comment"
+              value={editedText}
+              onChange={(e) => setEditedText(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+              <Typography sx={{ mr: 1 }}>Rating:</Typography>
+              <Rating
+                name="edit-comment-rating"
+                value={editedRating}
+                onChange={(e, newValue) => setEditedRating(newValue)}
+                max={5}
+              />
+            </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-            <Button onClick={confirmDelete} color="error">
-              Delete
-            </Button>
+            <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveComment} variant="contained">Save</Button>
           </DialogActions>
-        </Dialog> */}
+        </Dialog>
+        {/* ===================== END EDIT COMMENT DIALOG ===================== */}
   </Box>
 </ThemeProvider>
 );
