@@ -174,7 +174,7 @@ const AddRecipePage = () => {
         <Typography
           variant="h3"
           align="center"
-          color="#FF6E1C"
+          color="#DA3743"
           sx={{ fontWeight: "bold", mb: 4 }}
         >
           Recipes
@@ -340,7 +340,8 @@ const AddRecipePage = () => {
                       alignItems: "center",
                       overflow: "hidden",
                       border: "1px solid #ccc",
-                      borderRadius: "4px",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
                     }}
                   >
                     <img
@@ -364,11 +365,18 @@ const AddRecipePage = () => {
                   }}
                 >
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     component="label"
                     startIcon={<CloudUpload />}
                     sx={{
                       width: imagePreview ? "30%" : "100%",
+                      backgroundColor: "#FFFFFF",
+                      color: "#333",
+                      border: "1px solid #333",
+                      "&:hover": {
+                        backgroundColor: "#444",
+                        color: "#FFFFFF !important",
+                      },
                     }}
                   >
                     {imagePreview ? "Change" : "Upload an image"}
