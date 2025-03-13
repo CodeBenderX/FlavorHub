@@ -282,11 +282,11 @@ export default function Signin() {
 // }
 
   return (
-    <div style={{ backgroundColor: "#FFFFFF", height: "100vh" }}>
+    <div style={{ backgroundColor: "#F9F9F9", height: "100vh" }}>
       <Grid2 container spacing={0} sx={{ maxWidth: '100%'}}>
         <Card sx={useStyles.card}>
           <CardContent>
-            <Typography variant="h6" sx={useStyles.title}>
+            <Typography variant="h6" sx={{...useStyles.title, fontWeight: 'bold'}}>
               Login
               </Typography>
               <TextField
