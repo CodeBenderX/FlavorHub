@@ -418,6 +418,7 @@ const AddRecipePage = () => {
                       backgroundColor: "#333",
                       "&:hover": {
                         backgroundColor: "#444",
+                        color: "#F9F9F9 !important",
                       },
                     }}
                   >
@@ -427,9 +428,18 @@ const AddRecipePage = () => {
                 <Grid2 item xs={12} sm={6} md={5}>
                   <Button
                     variant="outlined"
-                    color="secondary"
                     fullWidth
                     onClick={() => navigate("/recipelist")}
+                    sx={{
+                      mb: 3,
+                      backgroundColor: "#FFFFFF",
+                      border: "1px solid #DA3743",
+                      color: "#DA3743",
+                      "&:hover": {
+                        backgroundColor: "#DA3743",
+                        color: "#FFFFFF !important",
+                      },
+                    }}
                   >
                     Cancel
                   </Button>
