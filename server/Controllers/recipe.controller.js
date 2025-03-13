@@ -57,6 +57,54 @@ const createRecipe = async (req, res) => {
     }
   };
   
+  // [Mar 9, 2025] Byron
+  const getRecipesByFilter = async (req, res) => {
+    try {
+      const ingredientFilter = req.params['ingredient'].split(','); 
+      
+      console.log(`--- recipe.controllers::getRecipesByFilter - filter: ${ingredientFilter} --- `);
+
+      if (!ingredientFilter) {
+        return res.status(400).json({"message": "No ingredient filter specified"})
+      }
+
+      /*
+      let recipes = await Recipe.find({
+        ingredients: new RegExp(ingredientFilter, 'i')
+      });
+      */
+        
+      const ingredientsArray = ingredientFilter.map(ingredient => ingredient.trim());
+      const regexArray = ingredientsArray.map(ingredient => new RegExp(ingredient, 'i'));
+      let recipes = await Recipe.find({
+        ingredients: { $in: regexArray }
+      });
+  
+      if (recipes.length === 0) {
+        return res.status(400).json({"message": `No recipes found that matches ingredient filter: ${ingredientFilter}`})
+      }
+      else {
+        recipes = recipes.map(recipe => {
+          const recipeObj = recipe.toObject();
+          if (recipeObj.image && recipeObj.image.data) {
+            return {
+              ...recipeObj,
+              image: {
+                contentType: recipeObj.image.contentType,
+                data: recipeObj.image.data.toString('base64')
+              }
+            };
+          }
+          return recipeObj;
+        });
+      }
+
+      res.status(200).json(recipes);
+    } 
+    catch (err) {
+      res.status(500).json({"message": `${err.message}`});
+    }
+  };  
 
 const recipeByID = async (req, res, next, id) => {
   try {
@@ -424,4 +472,4 @@ const updateComment = async (req, res) => {
 };
 
 export default { createRecipe, getAllRecipes, updateRecipe, deleteRecipe, read, defaultPhoto, photo, recipeByID, updateCreator, deleteUserRecipes,
-  transferRecipesToAdmin, remove, addComment, getRecipesByCreator, deleteComment, getCommentsByUser, updateComment };
+  transferRecipesToAdmin, remove, addComment, getRecipesByCreator, deleteComment, getCommentsByUser, updateComment, getRecipesByFilter };
