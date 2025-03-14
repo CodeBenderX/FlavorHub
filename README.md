@@ -12,11 +12,11 @@
 
 ## Technologies Used
 
-- **Frontend**: React, Bootstrap
+- **Frontend**: React, MUI
 - **Backend**: Node.js, Express
 - **Database**: MongoDB
 - **Authentication**: JWT (JSON Web Tokens)
-- **Styling**: Bootstrap
+- **Styling**: MUI, external CSS
 
 ## Installation
 
