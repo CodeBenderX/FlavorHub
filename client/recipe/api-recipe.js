@@ -189,5 +189,37 @@ const deleteRecipeComment = async (recipeId, commentId) => {
   }
 };
 
+//List Recipe by Ingredient - used to implement the api code that Byron created in back end
+const listByIngredient = async (params, token, signal) => {
+  try {
+    const response = await fetch(`/api/recipes/ingredient=${params.ingredient}`, {
+      method: "GET",
+      signal,
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      }
+    });
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-export { create, list, read, update, remove, updateRecipeCreators, deleteUserRecipes, transferRecipesToAdmin, updateRecipeComment, deleteRecipeComment }
+const listByCreator = async (params, token, signal) => {
+  try {
+    const response = await fetch(`/api/recipes/creator/${params.name}`, {
+      method: "GET",
+      signal,
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      }
+    });
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export { create, list, read, update, remove, updateRecipeCreators, deleteUserRecipes, transferRecipesToAdmin, updateRecipeComment, deleteRecipeComment, listByIngredient, listByCreator }

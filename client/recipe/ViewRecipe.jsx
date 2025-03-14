@@ -72,7 +72,7 @@ export default function ViewRecipe() {
   const recipeId = new URLSearchParams(location.search).get('id');
   const { from } = location.state || { from: '/recipelist' };
 
-const getImageUrl = useCallback((recipeData) => {
+  const getImageUrl = useCallback((recipeData) => {
     if (recipeData?.image?.data && recipeData.image.contentType) {
       let imageData;
       if (typeof recipeData.image.data === 'string') {
@@ -154,9 +154,21 @@ const getImageUrl = useCallback((recipeData) => {
     fetchRecipe();
   }, [fetchRecipe]);
 
-  const handleClose = useCallback(() => {
-    navigate(from);
-  }, [navigate, from]);
+  // const handleClose = useCallback(() => {
+  //   navigate(from);
+  // }, [navigate, from]);
+
+  const handleClose = () => {
+    if (location.state && location.state.from) {
+      // This should include the search query (e.g. "/memberhome?search=chicken")
+      const { pathname, search } = location.state.from;
+      //navigate(`${pathname}${search}`);
+      navigate(location.state.from);
+    } else {
+      // Fallback: simply go back one step in history
+      navigate("/memberhome");
+    }
+  };
 
   const handleBack = useCallback(() => {
     const fromPath = location.state?.from || '/';
