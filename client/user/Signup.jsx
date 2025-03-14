@@ -102,12 +102,12 @@ export default function Signup() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center',bgcolor: '#fff4f0' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center',bgcolor: '#f9f9f9' }}>
       <Grid container spacing={0} sx={{ maxWidth: '100%'}}>
         <Grid item xs={12} md={6}>
           <Card sx={useStyles.card}>
             <CardContent>
-              <Typography variant="h6" sx={useStyles.title}>
+              <Typography variant="h6" sx={{...useStyles.title, fontWeight: 'bold'}}>
                 Create Account
               </Typography>
               <TextField

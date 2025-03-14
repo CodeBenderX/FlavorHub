@@ -8,6 +8,9 @@ router.route('/api/recipes')
   .post(authCtrl.requireSignin, authCtrl.setUser, recipeCtrl.createRecipe)
   .get(recipeCtrl.getAllRecipes)
 
+// [Mar 9, 2025]: Byron
+router.route('/api/recipes/ingredient=:ingredient').get(authCtrl.requireSignin, authCtrl.setUser,recipeCtrl.getRecipesByFilter)
+
   router.route('/api/recipes/updateCreator')
   .put(authCtrl.requireSignin, authCtrl.setUser,recipeCtrl.updateCreator);
 
