@@ -398,14 +398,14 @@ const handleViewRecipe = (recipe) => {
               color="primary"
               sx={{
                 mt: 2,
-                border: "1px solid #000000",
-                backgroundColor: "#000000",
+                border: "1px solid #DA3743",
+                backgroundColor: "#DA3743",
                 "&:hover": {
                   backgroundColor: "#FFFFFF",
                 },
               }}
             >
-              Search
+              Find Your Favourite Recipes
             </Button>
           </form>
         </section>
