@@ -497,8 +497,8 @@ const handleViewRecipe = (recipe) => {
                 color: "#DA3743",
                 backgroundColor: "transparent",
                 "&:hover": {
-                  color: "#DA3743",
-                  backgroundColor: "transparent",
+                  color: "white !important",
+                  backgroundColor: "#DA3743",
                 },
               }}
             >
