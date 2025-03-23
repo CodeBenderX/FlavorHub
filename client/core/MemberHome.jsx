@@ -310,9 +310,12 @@ export default function MemberHome() {
     if (searchQuery.trim()) {
       // Suppose your route is /member
       navigate(`/member?search=${encodeURIComponent(searchQuery)}`);
+      performSearch(searchQuery);
     } else {
-      // If empty, remove any query param
+      // If empty, remove any query param, reset to show all recipes
       navigate(`/member`);
+      setFilteredRecipes(allRecipes);
+      setIsSearching(false);
     }
   };
 
@@ -324,7 +327,7 @@ export default function MemberHome() {
       setSearchQuery(queryParam);
       performSearch(queryParam);
     } else if (!queryParam && allRecipes.length > 0) {
-      // If no search param => show all
+      // If no search param => show all recipes
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
     }
@@ -332,7 +335,14 @@ export default function MemberHome() {
 
   // 1. In handleSearchInputChange, just update searchQuery:
 const handleSearchInputChange = (e) => {
-  setSearchQuery(e.target.value);
+  const value = e.target.value;
+  setSearchQuery(value);
+  if (value.trim() === "") {
+    // When input is cleared, update the URL and reset recipes
+    navigate(`/member`);
+    setFilteredRecipes(allRecipes);
+    setIsSearching(false);
+  }
 };
 
 const handleViewRecipe = (recipe) => {
@@ -385,10 +395,10 @@ const handleViewRecipe = (recipe) => {
           <form onSubmit={handleSearchSubmit}>
             <TextField
               type="search"
-              placeholder="Search recipes, ingredients or creators"
+              placeholder="Search recipes or ingredients"
               value={searchQuery}
-              //onChange={handleSearchInputChange}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchInputChange}
+              //onChange={(e) => setSearchQuery(e.target.value)}
               fullWidth
               margin="normal"
             />
