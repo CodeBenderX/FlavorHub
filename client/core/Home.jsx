@@ -127,7 +127,7 @@ export default function HomePage() {
                     backgroundColor: "#1A1A1A",
                     color: "white",
                     "&:hover": {
-                      backgroundColor: "#333333",
+                      backgroundColor: "#FFFFFF", color : "black !important", border: "1px solid #1A1A1A",
                     },
                   }}
                 >

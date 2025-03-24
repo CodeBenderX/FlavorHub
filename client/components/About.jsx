@@ -8,9 +8,9 @@ import logo from "../src/assets/FreshPlate-logo.png"; // Import FreshPlate logo
 import aboutAngelo from "../src/assets/Aboutus-Angelo.jpg";
 import aboutLorenzo from "../src/assets/Aboutus-Lorenzo.jpg";
 import aboutBianca from "../src/assets/Aboutus-Bianca.jpeg";
-import aboutByron from "../src/assets/react.svg";
-import aboutKunai from "../src/assets/react.svg";
-import aboutBhuvnesh from "../src/assets/react.svg";
+import aboutByron from "../src/assets/Aboutus-Byron.jpg";
+import aboutKunai from "../src/assets/Aboutus-Kunai.jpg";
+import aboutBhuvnesh from "../src/assets/Aboutus-Bhuvnesh.jpg";
 
 export default function AboutPage() {
   return (
