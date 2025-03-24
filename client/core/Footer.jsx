@@ -70,7 +70,7 @@ export default function Footer() {
         </Grid>
         <Box mt={4} textAlign="center">
           <Typography variant="body2" color="text.secondary">
-            This Website is Designed by <Link to="/about" style={{ color: '#DA3743', fontWeight: 'bold', textDecoration: 'none' }}>PseudoSquad 2.0</Link>
+            This Website is Designed by <Link to="/about" style={{ color: '#DA3743', fontWeight: 'bold', textDecoration: 'none' }}>PseudoSquad</Link>
           </Typography>
         </Box>
       </Container>
