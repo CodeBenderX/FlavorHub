@@ -12,11 +12,13 @@ import {
   CardContent,
   CardMedia,
 } from "@mui/material";
+import Box from "@mui/material/Box";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import auth from "../lib/auth-helper";
 import { list, listByIngredient, listByCreator } from '../recipe/api-recipe';
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
 import waffleImage from "../src/assets/waffle-registeredhome-small.png";
+import bannerAds from "../src/assets/banner-ads.png";
 
 const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -310,9 +312,12 @@ export default function MemberHome() {
     if (searchQuery.trim()) {
       // Suppose your route is /member
       navigate(`/member?search=${encodeURIComponent(searchQuery)}`);
+      performSearch(searchQuery);
     } else {
-      // If empty, remove any query param
+      // If empty, remove any query param, reset to show all recipes
       navigate(`/member`);
+      setFilteredRecipes(allRecipes);
+      setIsSearching(false);
     }
   };
 
@@ -324,7 +329,7 @@ export default function MemberHome() {
       setSearchQuery(queryParam);
       performSearch(queryParam);
     } else if (!queryParam && allRecipes.length > 0) {
-      // If no search param => show all
+      // If no search param => show all recipes
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
     }
@@ -332,7 +337,14 @@ export default function MemberHome() {
 
   // 1. In handleSearchInputChange, just update searchQuery:
 const handleSearchInputChange = (e) => {
-  setSearchQuery(e.target.value);
+  const value = e.target.value;
+  setSearchQuery(value);
+  if (value.trim() === "") {
+    // When input is cleared, update the URL and reset recipes
+    navigate(`/member`);
+    setFilteredRecipes(allRecipes);
+    setIsSearching(false);
+  }
 };
 
 const handleViewRecipe = (recipe) => {
@@ -376,38 +388,77 @@ const handleViewRecipe = (recipe) => {
     <div style={{ backgroundColor: "#f9f9f9" }}>
       <Container component="main" maxWidth="lg" sx={{ width: "80%" }}>
         <section>
-          <Typography variant="h2" component="h1" gutterBottom>
-            Discover Delicious Recipes
-          </Typography>
-          <Typography variant="h5" component="p" gutterBottom>
-            Find and share the best recipes from around the world
-          </Typography>
-          <form onSubmit={handleSearchSubmit}>
-            <TextField
-              type="search"
-              placeholder="Search recipes, ingredients or creators"
-              value={searchQuery}
-              //onChange={handleSearchInputChange}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              fullWidth
-              margin="normal"
+
+        <Box sx={{ position: "relative", width: "100%", height: "400px", mb: 4 }}>
+            <CardMedia
+              component="img"
+              image={bannerAds}
+              alt="Banner Image"
+              sx={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
+            <Box
               sx={{
-                mt: 2,
-                border: "1px solid #000000",
-                backgroundColor: "#000000",
-                "&:hover": {
-                  backgroundColor: "#FFFFFF",
-                },
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.2)" // semi-transparent overlay for contrast
               }}
             >
-              Search
-            </Button>
-          </form>
+              <Typography variant="h2" component="h1" sx={{ color: "white", mb: 0, lineHeight: 1.2 }}>
+                Discover Delicious Recipes
+              </Typography>
+              <Typography variant="h5" component="p" sx={{ color: "white", mt: 1, mb: 1, lineHeight: 1.2 }}>
+              Find and share the best recipes from around the world
+              </Typography>
+
+              <Box
+                component="form"
+                onSubmit={handleSearchSubmit}
+                sx={{
+                  width: "80%",
+                  maxWidth: "600px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
+                }}
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Search recipes or ingredients"
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: 1
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    mt: 2,
+                    mb: 4,
+                    backgroundColor: "#DA3743",
+                    border: "1px solid #DA3743",
+                    "&:hover": {
+                      backgroundColor: "#FFFFFF",
+                      color: "#DA3743"
+                    }
+                  }}
+                >
+                  Find Your Favourite Recipes
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        
         </section>
 
         {!isSearching && (
@@ -497,8 +548,8 @@ const handleViewRecipe = (recipe) => {
                 color: "#DA3743",
                 backgroundColor: "transparent",
                 "&:hover": {
-                  color: "#DA3743",
-                  backgroundColor: "transparent",
+                  color: "white !important",
+                  backgroundColor: "#DA3743",
                 },
               }}
             >
