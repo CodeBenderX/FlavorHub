@@ -431,7 +431,7 @@ const handleViewRecipe = (recipe) => {
                 <TextField
                   fullWidth
                   variant="outlined"
-                  placeholder="Search recipes or ingredients"
+                  placeholder="Search recipes, ingredients or recipe owner"
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                   sx={{
