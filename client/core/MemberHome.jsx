@@ -407,7 +407,7 @@ const handleViewRecipe = (recipe) => {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.2)" // semi-transparent overlay for contrast
+                backgroundColor: "rgba(0, 0, 0, 0.4)" // semi-transparent overlay for contrast
               }}
             >
               <Typography variant="h2" component="h1" sx={{ color: "white", mb: 0, lineHeight: 1.2 }}>
