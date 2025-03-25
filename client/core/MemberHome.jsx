@@ -12,11 +12,13 @@ import {
   CardContent,
   CardMedia,
 } from "@mui/material";
+import Box from "@mui/material/Box";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import auth from "../lib/auth-helper";
-import { list } from '../recipe/api-recipe';
+import { list, listByIngredient, listByCreator } from '../recipe/api-recipe';
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
 import waffleImage from "../src/assets/waffle-registeredhome-small.png";
+import bannerAds from "../src/assets/banner-ads.png";
 
 const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -195,6 +197,10 @@ export default function MemberHome() {
   const location = useLocation();
 
   const getImageUrl = useCallback((recipe) => {
+    // If the image is already a valid data URL, return it
+  if (typeof recipe.image === 'string' && recipe.image.startsWith("data:")) {
+    return recipe.image;
+  }
     if (recipe.image && recipe.image.data && recipe.image.contentType) {
       let imageData;
       if (typeof recipe.image.data === 'string') {
@@ -253,33 +259,98 @@ export default function MemberHome() {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const filtered = allRecipes.filter(
-      (recipe) =>
-        recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        recipe.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredRecipes(filtered);
-    setDisplayCount(8);
-    setIsSearching(true);
-  };
-
-  const handleSearchInputChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    if (query === "") {
+  // 4) The function that actually does the search logic (backend + local)
+  const performSearch = async (query) => {
+    const jwt = auth.isAuthenticated();
+    if (!query.trim()) {
+      // Empty query => show all recipes
       setFilteredRecipes(allRecipes);
-      setDisplayCount(8);
       setIsSearching(false);
-    } else {
-      handleSearch(e);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const [ingredientData, creatorData] = await Promise.all([
+        listByIngredient({ ingredient: query }, jwt.token),
+        listByCreator({ name: query }, jwt.token)
+      ]);
+
+      const backendIngredientResults = Array.isArray(ingredientData) ? ingredientData : [];
+      const backendCreatorResults = Array.isArray(creatorData) ? creatorData : [];
+
+      // Local filter
+      const localResults = allRecipes.filter(r =>
+        r.title.toLowerCase().includes(query.toLowerCase()) ||
+        (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
+      );
+
+      // Merge & remove duplicates
+      const merged = [
+        ...new Map(
+          [...backendIngredientResults, ...backendCreatorResults, ...localResults].map(item => [item._id, item])
+        ).values()
+      ];
+
+      // Convert images
+      const finalResults = merged.map(r => ({
+        ...r,
+        image: getImageUrl(r)
+      }));
+      setFilteredRecipes(finalResults);
+      setIsSearching(true);
+    } catch (err) {
+      console.error("Error searching recipes:", err);
+      setError("Error searching recipes. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleViewRecipe = (recipe) => {
-    navigate(`/viewrecipe?id=${recipe._id}`, { state: { from: location.pathname } });
+   // 5) The form submission handler: updates the URL with ?search=...
+   const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Suppose your route is /member
+      navigate(`/member?search=${encodeURIComponent(searchQuery)}`);
+      performSearch(searchQuery);
+    } else {
+      // If empty, remove any query param, reset to show all recipes
+      navigate(`/member`);
+      setFilteredRecipes(allRecipes);
+      setIsSearching(false);
+    }
+  };
+
+  // 6) On mount or whenever the URL changes, read the query param & run search
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const queryParam = params.get("search");
+    if (queryParam && allRecipes.length > 0) {
+      setSearchQuery(queryParam);
+      performSearch(queryParam);
+    } else if (!queryParam && allRecipes.length > 0) {
+      // If no search param => show all recipes
+      setFilteredRecipes(allRecipes);
+      setIsSearching(false);
+    }
+  }, [location.search, allRecipes]);
+
+  // 1. In handleSearchInputChange, just update searchQuery:
+const handleSearchInputChange = (e) => {
+  const value = e.target.value;
+  setSearchQuery(value);
+  if (value.trim() === "") {
+    // When input is cleared, update the URL and reset recipes
+    navigate(`/member`);
+    setFilteredRecipes(allRecipes);
+    setIsSearching(false);
   }
+};
+
+const handleViewRecipe = (recipe) => {
+  // Pass the entire location, including ?search=...
+  navigate(`/viewrecipe?id=${recipe._id}`, { state: { from: location } });
+};
 
   const handleLoadMore = () => {
     setDisplayCount(prevCount => prevCount + 8);
@@ -317,37 +388,77 @@ export default function MemberHome() {
     <div style={{ backgroundColor: "#f9f9f9" }}>
       <Container component="main" maxWidth="lg" sx={{ width: "80%" }}>
         <section>
-          <Typography variant="h2" component="h1" gutterBottom>
-            Discover Delicious Recipes
-          </Typography>
-          <Typography variant="h5" component="p" gutterBottom>
-            Find and share the best recipes from around the world
-          </Typography>
-          <form onSubmit={handleSearch}>
-            <TextField
-              type="search"
-              placeholder="Search recipes..."
-              value={searchQuery}
-              onChange={handleSearchInputChange}
-              fullWidth
-              margin="normal"
+
+        <Box sx={{ position: "relative", width: "100%", height: "400px", mb: 4 }}>
+            <CardMedia
+              component="img"
+              image={bannerAds}
+              alt="Banner Image"
+              sx={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
+            <Box
               sx={{
-                mt: 2,
-                border: "1px solid #000000",
-                backgroundColor: "#000000",
-                "&:hover": {
-                  backgroundColor: "#FFFFFF",
-                },
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.4)" // semi-transparent overlay for contrast
               }}
             >
-              Search
-            </Button>
-          </form>
+              <Typography variant="h2" component="h1" sx={{ color: "white", mb: 0, lineHeight: 1.2 }}>
+                Discover Delicious Recipes
+              </Typography>
+              <Typography variant="h5" component="p" sx={{ color: "white", mt: 1, mb: 1, lineHeight: 1.2 }}>
+              Find and share the best recipes from around the world
+              </Typography>
+
+              <Box
+                component="form"
+                onSubmit={handleSearchSubmit}
+                sx={{
+                  width: "80%",
+                  maxWidth: "600px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
+                }}
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Search recipes, ingredients or recipe owner"
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: 1
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    mt: 2,
+                    mb: 4,
+                    backgroundColor: "#DA3743",
+                    border: "1px solid #DA3743",
+                    "&:hover": {
+                      backgroundColor: "#FFFFFF",
+                      color: "#DA3743"
+                    }
+                  }}
+                >
+                  Find Your Favourite Recipes
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        
         </section>
 
         {!isSearching && (
@@ -437,8 +548,8 @@ export default function MemberHome() {
                 color: "#DA3743",
                 backgroundColor: "transparent",
                 "&:hover": {
-                  color: "#DA3743",
-                  backgroundColor: "transparent",
+                  color: "white !important",
+                  backgroundColor: "#DA3743",
                 },
               }}
             >

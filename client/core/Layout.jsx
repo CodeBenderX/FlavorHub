@@ -21,7 +21,7 @@ export default function Layout() {
         <Toolbar>
           <Typography variant="h6" color="#FF6E1C" sx={{ flexGrow: 1 }}>
             <Button component={Link} to={auth.isAuthenticated() ? "/member" : "/"} 
-              color="inherit">
+              color="inherit" sx={{":hover": {backgroundColor: "transparent !important"}}}>
               <img src={logo} alt="FlavorHub-Logo" height={20} />
             </Button>
           </Typography>
