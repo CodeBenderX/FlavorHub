@@ -149,13 +149,23 @@ export default function RecipeList() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const added = params.get("added");
-    if (added === "true") {
+    // const added = params.get("added");
+    // if (added === "true") {
+    //   setConfirmationDialog({
+    //     open: true,
+    //     title: "Recipe Added",
+    //     message: "Your recipe has been successfully added.",
+    //   });
+    // }
+    if (params.get("added") === "true") {
       setConfirmationDialog({
         open: true,
         title: "Recipe Added",
         message: "Your recipe has been successfully added.",
       });
+      params.delete("added");
+      const newSearch = params.toString();
+      navigate(`${location.pathname}${newSearch ? "?" + newSearch : ""}`, { replace: true });
     }
   }, [location]);
 
