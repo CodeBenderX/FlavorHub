@@ -159,16 +159,35 @@ export default function ViewRecipe() {
   // }, [navigate, from]);
 
   const handleClose = () => {
-    if (location.state && location.state.from) {
-      // This should include the search query (e.g. "/memberhome?search=chicken")
-      const { pathname, search } = location.state.from;
-      //navigate(`${pathname}${search}`);
-      navigate(location.state.from);
+  //   if (location.state && location.state.from) {
+  //     // This should include the search query (e.g. "/memberhome?search=chicken")
+  //     const { pathname, search } = location.state.from;
+  //     //navigate(`${pathname}${search}`);
+  //     // Remove the 'added' parameter if it exists
+  //     //params.delete("added");
+  //     navigate(location.state.from);
+      
+  //   } else {
+  //     // Fallback: simply go back one step in history
+  //     navigate("/memberhome");
+  //   }
+  // };
+  if (location.state && location.state.from) {
+    const from = location.state.from;
+    console.log("Navigating back to:", from);
+    if (typeof from === "string") {
+      navigate(from);
+    } else if (from.pathname) {
+      // Construct URL string from object properties
+      const url = from.pathname + (from.search || "");
+      navigate(url);
     } else {
-      // Fallback: simply go back one step in history
       navigate("/memberhome");
     }
-  };
+  } else {
+    navigate("/memberhome");
+  }
+};
 
   const handleBack = useCallback(() => {
     const fromPath = location.state?.from || '/';
@@ -458,7 +477,7 @@ export default function ViewRecipe() {
             </Box>
 
             <Chip
-              label="Medium"
+              label={recipe.category || 'Miscellaneous'}
               sx={{
                 bgcolor: '#ffd700',
                 color: '#000',
