@@ -122,6 +122,10 @@ export default function RecipeList() {
       }
 
       const data = await response.json();
+       // Sort recipes by the created date (newest first)
+    const sortedData = data.sort(
+      (a, b) => new Date(b.created) - new Date(a.created)
+    )
       if (!creatorQuery) {
         // Show only the logged in user's recipes if no creator query parameter exists
         const userRecipes = data.filter(
