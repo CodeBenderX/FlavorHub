@@ -48,6 +48,10 @@ const recipeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  category: {
+    type: String, // <-- Added category field
+    trim: true,
+  },
   comments: [commentSchema]
 });
 

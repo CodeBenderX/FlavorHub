@@ -13,6 +13,10 @@ import {
   Alert,
   CircularProgress,
   Grid2,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { CloudUpload, Cancel } from "@mui/icons-material";
 import { create } from "./api-recipe";
@@ -43,6 +47,8 @@ const AddRecipePage = () => {
     preptime: "",
     cooktime: "",
     servings: "",
+    // New field: Category with default value "Miscellaneous"
+    category: "Miscellaneous",
     image: "",
   });
   const [errors, setErrors] = useState({});
@@ -174,7 +180,7 @@ const AddRecipePage = () => {
         <Typography
           variant="h3"
           align="center"
-          color="#FF6E1C"
+          color="#DA3743"
           sx={{ fontWeight: "bold", mb: 4 }}
         >
           Recipes
@@ -203,7 +209,25 @@ const AddRecipePage = () => {
                 error={!!errors.title}
                 helperText={errors.title}
               />
-
+               {/* New: Category Dropdown */}
+               <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel id="category-label">Category</InputLabel>
+                <Select
+                  labelId="category-label"
+                  id="category"
+                  label="Category"
+                  value={values.category}
+                  onChange={handleChange("category")}
+                >
+                  <MenuItem value="Appetizers">Appetizers</MenuItem>
+                  <MenuItem value="Soups">Soups</MenuItem>
+                  <MenuItem value="Main Dishes">Main Dishes</MenuItem>
+                  <MenuItem value="Desserts">Desserts</MenuItem>
+                  <MenuItem value="Beverages">Beverages</MenuItem>
+                  <MenuItem value="Miscellaneous">Miscellaneous</MenuItem>
+                </Select>
+              </FormControl>
+              
               <TextField
                 label="Ingredients"
                 variant="outlined"
@@ -340,7 +364,8 @@ const AddRecipePage = () => {
                       alignItems: "center",
                       overflow: "hidden",
                       border: "1px solid #ccc",
-                      borderRadius: "4px",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
                     }}
                   >
                     <img
@@ -364,11 +389,18 @@ const AddRecipePage = () => {
                   }}
                 >
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     component="label"
                     startIcon={<CloudUpload />}
                     sx={{
                       width: imagePreview ? "30%" : "100%",
+                      backgroundColor: "#FFFFFF",
+                      color: "#333",
+                      border: "1px solid #333",
+                      "&:hover": {
+                        backgroundColor: "#444",
+                        color: "#FFFFFF !important",
+                      },
                     }}
                   >
                     {imagePreview ? "Change" : "Upload an image"}
@@ -410,6 +442,7 @@ const AddRecipePage = () => {
                       backgroundColor: "#333",
                       "&:hover": {
                         backgroundColor: "#444",
+                        color: "#F9F9F9 !important",
                       },
                     }}
                   >
@@ -419,9 +452,18 @@ const AddRecipePage = () => {
                 <Grid2 item xs={12} sm={6} md={5}>
                   <Button
                     variant="outlined"
-                    color="secondary"
                     fullWidth
                     onClick={() => navigate("/recipelist")}
+                    sx={{
+                      mb: 3,
+                      backgroundColor: "#FFFFFF",
+                      border: "1px solid #DA3743",
+                      color: "#DA3743",
+                      "&:hover": {
+                        backgroundColor: "#DA3743",
+                        color: "#FFFFFF !important",
+                      },
+                    }}
                   >
                     Cancel
                   </Button>
