@@ -279,9 +279,14 @@ export default function MemberHome() {
       const backendCreatorResults = Array.isArray(creatorData) ? creatorData : [];
 
       // Local filter
+      // const localResults = allRecipes.filter(r =>
+      //   r.title.toLowerCase().includes(query.toLowerCase()) ||
+      //   (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
+      // );
       const localResults = allRecipes.filter(r =>
         r.title.toLowerCase().includes(query.toLowerCase()) ||
-        (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
+        (r.description && r.description.toLowerCase().includes(query.toLowerCase())) ||
+        (r.category && r.category.toLowerCase().includes(query.toLowerCase()))
       );
 
       // Merge & remove duplicates

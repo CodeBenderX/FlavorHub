@@ -428,7 +428,9 @@ import {
   Alert,
   CircularProgress,
   styled,
-  IconButton
+  IconButton,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { Upload, Delete, Edit } from 'lucide-react';
 import auth from "../lib/auth-helper";
@@ -454,6 +456,7 @@ export default function EditRecipe() {
     instructions: '',
     preptime: '',
     cooktime: '',
+    category: 'Miscellaneous',
     //image: null
   });
   // newImage holds the File if user selects a new image
@@ -554,7 +557,9 @@ export default function EditRecipe() {
         instructions: data.instructions || '',
         preptime: data.preptime || '',
         cooktime: data.cooktime || '',
-        servings: data.servings || ''
+        servings: data.servings || '',
+        // Set category to the value from the database or fallback to "Miscellaneous"
+        category: data.category || 'Miscellaneous',
       });
       setImagePreview(getImageUrl(data));
     } catch (err) {
@@ -794,7 +799,24 @@ export default function EditRecipe() {
                 size="small"
               />
             </Box>
-
+            <Box>
+              <Typography sx={{ mb: 1, color: '#666' }}>Category*</Typography>
+              <Select
+                fullWidth
+                name="category"
+                value={recipe.category}
+                onChange={handleChange}
+                variant="outlined"
+                size="small"
+              >
+                <MenuItem value="Appetizers">Appetizers</MenuItem>
+                <MenuItem value="Soups">Soups</MenuItem>
+                <MenuItem value="Main Dishes">Main Dishes</MenuItem>
+                <MenuItem value="Desserts">Desserts</MenuItem>
+                <MenuItem value="Beverages">Beverages</MenuItem>
+                <MenuItem value="Miscellaneous">Miscellaneous</MenuItem>
+              </Select>
+            </Box>
             <Box>
               <Typography sx={{ mb: 1, color: '#666' }}>Ingredients*</Typography>
               <StyledTextField
