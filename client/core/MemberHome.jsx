@@ -19,6 +19,8 @@ import { list, listByIngredient, listByCreator } from '../recipe/api-recipe';
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
 import waffleImage from "../src/assets/waffle-registeredhome-small.png";
 import bannerAds from "../src/assets/banner-ads.png";
+import InputAdornment from "@mui/material/InputAdornment";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -279,9 +281,14 @@ export default function MemberHome() {
       const backendCreatorResults = Array.isArray(creatorData) ? creatorData : [];
 
       // Local filter
+      // const localResults = allRecipes.filter(r =>
+      //   r.title.toLowerCase().includes(query.toLowerCase()) ||
+      //   (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
+      // );
       const localResults = allRecipes.filter(r =>
         r.title.toLowerCase().includes(query.toLowerCase()) ||
-        (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
+        (r.description && r.description.toLowerCase().includes(query.toLowerCase())) ||
+        (r.category && r.category.toLowerCase().includes(query.toLowerCase()))
       );
 
       // Merge & remove duplicates
@@ -431,12 +438,28 @@ const handleViewRecipe = (recipe) => {
                 <TextField
                   fullWidth
                   variant="outlined"
-                  placeholder="Search recipes, ingredients or recipe owner"
+                  placeholder="Search recipes, ingredients, recipe owner or category"
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                   sx={{
                     backgroundColor: "white",
                     borderRadius: 1
+                  }}
+                  InputProps={{
+                    endAdornment: searchQuery ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => {
+                            setSearchQuery("");
+                            navigate(`/member`);
+                            setFilteredRecipes(allRecipes);
+                            setIsSearching(false);
+                          }}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null
                   }}
                 />
                 <Button

@@ -11,8 +11,11 @@ const createRecipe = async (req, res) => {
         message: "Image could not be uploaded",
       });
     }
-    Object.keys(fields).forEach((key) => (fields[key] = fields[key][0]));
-    Object.keys(files).forEach((key) => (files[key] = files[key][0]));
+    Object.keys(fields).forEach((key) => {fields[key] = fields[key][0]});
+    // Default the category field to an empty string if not provided
+    if (!fields.category) {
+      fields.category = "Miscellaneous";}
+    Object.keys(files).forEach((key) => {files[key] = files[key][0]});
     let recipe = new Recipe(fields);
     recipe.creator = req.auth.name
     if (files.image) {
@@ -32,7 +35,7 @@ const createRecipe = async (req, res) => {
 
   const getAllRecipes = async (req, res) => {
     try {
-      let recipes = await Recipe.find().select('title ingredients instructions creator preptime cooktime servings created updated image');
+      let recipes = await Recipe.find().select('title ingredients instructions creator preptime cooktime servings category created updated image');
       
       recipes = recipes.map(recipe => {
         const recipeObj = recipe.toObject();
