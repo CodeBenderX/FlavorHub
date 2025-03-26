@@ -19,6 +19,8 @@ import { list, listByIngredient, listByCreator } from '../recipe/api-recipe';
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
 import waffleImage from "../src/assets/waffle-registeredhome-small.png";
 import bannerAds from "../src/assets/banner-ads.png";
+import InputAdornment from "@mui/material/InputAdornment";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -442,6 +444,22 @@ const handleViewRecipe = (recipe) => {
                   sx={{
                     backgroundColor: "white",
                     borderRadius: 1
+                  }}
+                  InputProps={{
+                    endAdornment: searchQuery ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => {
+                            setSearchQuery("");
+                            navigate(`/member`);
+                            setFilteredRecipes(allRecipes);
+                            setIsSearching(false);
+                          }}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null
                   }}
                 />
                 <Button
