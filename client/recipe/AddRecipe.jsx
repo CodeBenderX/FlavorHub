@@ -13,6 +13,10 @@ import {
   Alert,
   CircularProgress,
   Grid2,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { CloudUpload, Cancel } from "@mui/icons-material";
 import { create } from "./api-recipe";
@@ -43,6 +47,8 @@ const AddRecipePage = () => {
     preptime: "",
     cooktime: "",
     servings: "",
+    // New field: Category with default value "Miscellaneous"
+    category: "Miscellaneous",
     image: "",
   });
   const [errors, setErrors] = useState({});
@@ -203,7 +209,25 @@ const AddRecipePage = () => {
                 error={!!errors.title}
                 helperText={errors.title}
               />
-
+               {/* New: Category Dropdown */}
+               <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel id="category-label">Category</InputLabel>
+                <Select
+                  labelId="category-label"
+                  id="category"
+                  label="Category"
+                  value={values.category}
+                  onChange={handleChange("category")}
+                >
+                  <MenuItem value="Appetizers">Appetizers</MenuItem>
+                  <MenuItem value="Soups">Soups</MenuItem>
+                  <MenuItem value="Main Dishes">Main Dishes</MenuItem>
+                  <MenuItem value="Desserts">Desserts</MenuItem>
+                  <MenuItem value="Beverages">Beverages</MenuItem>
+                  <MenuItem value="Miscellaneous">Miscellaneous</MenuItem>
+                </Select>
+              </FormControl>
+              
               <TextField
                 label="Ingredients"
                 variant="outlined"
