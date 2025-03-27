@@ -121,7 +121,11 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
                     gutterBottom
                     variant="h6"
                     component="div"
-                    sx={{ mb: 1 }}
+                    sx={{ mb: 1,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                     }}
                   >
                     {recipe.title}
                   </Typography>
@@ -516,7 +520,11 @@ const handleViewRecipe = (recipe) => {
                       gutterBottom
                       variant="h6"
                       component="div"
-                      sx={{ mb: 1 }}
+                      sx={{ mb: 1,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                       }}
                     >
                       {recipe.title}
                     </Typography>
