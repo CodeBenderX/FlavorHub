@@ -319,7 +319,13 @@ export default function RecipeList() {
                   boxShadow: "none",
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{ display: "flex", 
+                  alignItems: "center", 
+                  gap: 2,
+                  flex: 1,
+                  minWidth: 0, 
+                  overflow: "hidden"
+                }}>
                   {recipe.image && recipe.image.data ? (
                     <Avatar
                       src={getImageUrl(recipe)}
@@ -337,7 +343,14 @@ export default function RecipeList() {
                       variant="rounded"
                     ></Avatar>
                   )}
-                  <Typography variant="h6" component="h2">
+                  <Typography variant="h6" component="h2"
+                    sx={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      flex: 1,
+                    }}
+                  >
                     {recipe.title}
                   </Typography>
                 </Box>
@@ -345,8 +358,8 @@ export default function RecipeList() {
                   <Button
                     variant="outlined"
                     endIcon={<ChevronRight />}
-                    sx={{ borderRadius: "4px" }}
                     onClick={() => handleViewRecipe(recipe._id)}
+                    sx={{ borderRadius: "4px" }}
                   >
                     View Recipe
                   </Button>
