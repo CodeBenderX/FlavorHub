@@ -5,15 +5,16 @@ import {
   TextField,
   Typography,
   Button,
-  Grid2,
+  Grid,
   Box,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import PrivacyTipIcon from "@mui/icons-material/PrivacyTip"; // <-- Secret icon
+import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import {
   signin,
@@ -26,13 +27,15 @@ import loginpage from "../src/assets/login-signup.jpeg";
 
 const useStyles = {
   card: {
+    width: "90%",
     maxWidth: 500,
     margin: "auto",
     textAlign: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: { xs: "auto", sm: 10 },
     paddingBottom: 2,
     borderRadius: "10px",
+    boxShadow: { xs: "none", sm: "0px 2px 10px rgba(0,0,0,0.1)" },
   },
   error: {
     verticalAlign: "middle",
@@ -40,11 +43,47 @@ const useStyles = {
   title: {
     marginTop: 2,
     color: "#DA3743",
+    fontSize: { xs: "1.5rem", sm: "1.75rem" },
   },
   textField: {
     marginLeft: 1,
     marginRight: 1,
-    width: 300,
+    width: "90%",
+    maxWidth: 300,
+  },
+  buttonContainer: {
+    display: "flex",
+    flexDirection: { xs: "column", sm: "row" },
+    justifyContent: "center",
+    gap: 2,
+    marginTop: 2,
+  },
+  loginButton: {
+    marginBottom: { xs: 2, sm: 0 },
+    bgcolor: "#000000",
+    color: "white",
+    "&:hover": {
+      bgcolor: "#FFFFFF",
+      color: "#000000",
+      border: "1px solid #000000",
+    },
+  },
+  registerButton: {
+    border: "1px solid #000000",
+    "&:hover": {
+      bgcolor: "#000000",
+      color: "#FFFFFF !important",
+    },
+  },
+  imageContainer: {
+    display: { xs: "none", md: "flex" },
+    height: "100vh",
+  },
+  rootContainer: {
+    backgroundColor: "#F9F9F9",
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
   },
 };
 
@@ -68,23 +107,16 @@ export default function Signin() {
   const [sqError, setSqError] = useState("");
   const [sqMessage, setSqMessage] = useState("");
 
-  // ----- Reset Password Dialog State -----
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [resetError, setResetError] = useState("");
   const [resetMessage, setResetMessage] = useState("");
 
-  // New state for the success dialog:
   const [resetSuccessDialogOpen, setResetSuccessDialogOpen] = useState(false);
 
-   // Admin login modal state
-  //  const [adminLoginDialogOpen, setAdminLoginDialogOpen] = useState(false);
-  //  const [adminEmail, setAdminEmail] = useState("");
-  //  const [adminPassword, setAdminPassword] = useState("");
-  //  const [adminError, setAdminError] = useState("");
-
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -99,7 +131,6 @@ export default function Signin() {
     };
 
     signin(user).then((data) => {
-      console.log("Signin response:", data);
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -131,7 +162,6 @@ export default function Signin() {
 
   // Open Forgot Password modal
   const handleOpenForgotPassword = () => {
-    // Reset all states related to forgot password flow
     setForgotPasswordOpen(true);
     setFpEmail("");
     setFpError("");
@@ -155,13 +185,9 @@ export default function Signin() {
   const handleForgotPasswordSubmit = async () => {
     // Call the backend API to retrieve the security question
     const response = await forgotPassword({ email: fpEmail });
-    console.log("Forgot password response:", response);
     if (response.error) {
       setFpError(response.error);
     } else if (response.securityQuestion) {
-      // If a security question is returned, proceed to the next step.
-      //setFpMessage(response.message || "Security question retrieved.");
-      // Close the email dialog and open the security question dialog.
       setFpMessage(response.message || "Security question retrieved.");
       setSecurityQuestion(response.securityQuestion);
 
@@ -175,13 +201,6 @@ export default function Signin() {
     }
   };
 
-  // const handleOpenSecurityQuestionDialog = () => {
-  //   setSecurityQuestionDialogOpen(true);
-  //   setSecurityAnswer("");
-  //   setSqError("");
-  //   setSqMessage("");
-  // }
-  // ----- Security Question Dialog -----
   const handleCloseSecurityQuestion = () => {
     setSecurityQuestionDialogOpen(false);
   };
@@ -197,7 +216,6 @@ export default function Signin() {
     // Call the backend to verify the security answer
     // Normalize the answer before sending it
     const normalizedAnswer = securityAnswer.trim().toLowerCase();
-
     const response = await verifySecurityAnswer({
       email: fpEmail,
       securityAnswer: normalizedAnswer,
@@ -205,9 +223,7 @@ export default function Signin() {
     if (response.error) {
       setSqError(response.error);
     } else {
-      setSqMessage(
-        "Security answer verified. You can now reset your password."
-      );
+      setSqMessage("Security answer verified. You can now reset your password.");
       setSecurityQuestionDialogOpen(false);
       setResetPasswordDialogOpen(true);
     }
@@ -218,7 +234,7 @@ export default function Signin() {
     setResetPasswordDialogOpen(false);
   };
 
-  // 3. Submit the new password to the backend
+  // Submit the new password to the backend
   const handleResetPasswordSubmit = async () => {
     setResetError("");
     setResetMessage("");
@@ -251,43 +267,14 @@ export default function Signin() {
     navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
   };
 
-// Handler for the secret icon double-click: open admin login modal
-// const handleSecretIconDoubleClick = () => {
-//   // Reset admin login state
-//   setAdminEmail("");
-//   setAdminPassword("");
-//   setAdminError("");
-//   setAdminLoginDialogOpen(true);
-// };
-
-// Handler for admin login form submission
-// const handleAdminLoginSubmit = async () => {
-//   setAdminError("");
-//   // Call your signin API with admin credentials
-//   const data = await signin({ email: adminEmail, password: adminPassword });
-//   if (data.error) {
-//     setAdminError(data.error);
-//   } else {
-//     // Check if the signed-in user has an admin role
-//     if (data.user.role !== "admin") {
-//       setAdminError("Access denied. Not an admin account.");
-//       auth.clearJWT();
-//     } else {
-//       auth.authenticate(data, () => {
-//         setAdminLoginDialogOpen(false);
-//         navigate("/admin/dashboard"); // Adjust this route as needed
-//       });
-//     }
-//   }
-// }
-
   return (
-    <div style={{ backgroundColor: "#F9F9F9", height: "100vh" }}>
-      <Grid2 container spacing={0} sx={{ maxWidth: '100%'}}>
-        <Card sx={useStyles.card}>
-          <CardContent>
-            <Typography variant="h6" sx={{...useStyles.title, fontWeight: 'bold'}}>
-              Login
+    <Box sx={useStyles.rootContainer}>
+      <Grid container spacing={0} sx={{ width: "100%", height: "100%" }}>
+        <Grid item xs={12} md={6} sx={{ display: "flex", alignItems: "center" }}>
+          <Card sx={useStyles.card}>
+            <CardContent>
+              <Typography variant="h6" sx={useStyles.title}>
+                Login
               </Typography>
               <TextField
                 id="email"
@@ -314,43 +301,25 @@ export default function Signin() {
                   {values.error}
                 </Typography>
               )}
-              <br />
-              <Button
-                color="#FFFFFF"
-                variant="contained"
-                onClick={clickSubmit}
-                sx={{
-                  margin: "auto",
-                  marginBottom: 2,
-                  marginRight: 1,
-                  bgcolor: "#000000",
-                  color: "white",
-                  "&:hover": {
-                    bgcolor: "#FFFFFF",
-                    border: "1px solid #000000",
-                  },
-                }}
-              >
-                Login
-              </Button>
-              <Button
-                color="#000000"
-                variant="contained"
-                onClick={clickRegister}
-                sx={{
-                  margin: "auto",
-                  marginBottom: 2,
-                  marginLeft: 1,
-                  border: "1px solid #000000",
-                  "&:hover": {
-                    bgcolor: "#000000",
-                    color: "#FFFFFF !important",
-                  },
-                }}
-              >
-                Register
-              </Button>
-              <Typography component="p" color="#000000">
+              <Box sx={useStyles.buttonContainer}>
+                <Button
+                  variant="contained"
+                  onClick={clickSubmit}
+                  sx={useStyles.loginButton}
+                  fullWidth={isMobile}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={clickRegister}
+                  sx={useStyles.registerButton}
+                  fullWidth={isMobile}
+                >
+                  Register
+                </Button>
+              </Box>
+              <Typography component="p" color="#000000" sx={{ mt: 2 }}>
                 Don't have an account? <Link to="/signup">Join Now</Link>
               </Typography>
               <Typography
@@ -359,7 +328,7 @@ export default function Signin() {
                   cursor: "pointer",
                   textDecoration: "underline",
                   mt: 1,
-                  color: "#000000", // ✅ Moved color inside sx
+                  color: "#000000",
                 }}
                 onClick={handleOpenForgotPassword}
               >
@@ -367,46 +336,23 @@ export default function Signin() {
               </Typography>
             </CardContent>
           </Card>
-        <Grid2
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        </Grid>
+        <Grid item xs={12} md={6} sx={useStyles.imageContainer}>
           <Box
             component="img"
             sx={{
-              maxWidth: "100%",
               width: "100%",
-              height: "100vh",
+              height: "100%",
               objectFit: "cover",
             }}
             alt="Healthy food"
             src={loginpage}
           />
-        </Grid2>
-      </Grid2>  
-       {/* Secret Icon in the lower-left corner */}
-       {/* <Box
-        sx={{
-          position: "fixed",
-          left: 20,
-          bottom: 20,
-          cursor: "pointer",
-          zIndex: 9999,
-        }}
-        onDoubleClick={handleSecretIconDoubleClick}
-      >
-        <IconButton>
-          <PrivacyTipIcon sx={{ color: "gray", fontSize: 30 }} />
-        </IconButton>
-      </Box> */}
+        </Grid>
+      </Grid>
+
       {/* Forgot Password Modal */}
-      <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword}>
+      <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword} fullWidth maxWidth="xs">
         <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
           <Typography variant="body1">Enter your email address:</Typography>
@@ -429,10 +375,13 @@ export default function Signin() {
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Security Question Dialog */}
       <Dialog
         open={securityQuestionDialogOpen}
         onClose={handleCloseSecurityQuestion}
+        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle>Security Question</DialogTitle>
         <DialogContent>
@@ -456,8 +405,9 @@ export default function Signin() {
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Reset Password Dialog */}
-      <Dialog open={resetPasswordDialogOpen} onClose={handleCloseResetPassword}>
+      <Dialog open={resetPasswordDialogOpen} onClose={handleCloseResetPassword} fullWidth maxWidth="xs">
         <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
           <TextField
@@ -490,10 +440,13 @@ export default function Signin() {
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Reset Success Dialog */}
       <Dialog
         open={resetSuccessDialogOpen}
         onClose={handleCloseResetSuccessDialog}
+        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle>Password Reset Successful</DialogTitle>
         <DialogContent>
@@ -505,41 +458,6 @@ export default function Signin() {
           </Button>
         </DialogActions>
       </Dialog>
-       {/* Admin Login Modal */}
-       {/* <Dialog
-        open={adminLoginDialogOpen}
-        onClose={() => setAdminLoginDialogOpen(false)}
-      >
-        <DialogTitle>Admin Login</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Admin Email"
-            value={adminEmail}
-            onChange={(e) => setAdminEmail(e.target.value)}
-            margin="dense"
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            value={adminPassword}
-            onChange={(e) => setAdminPassword(e.target.value)}
-            margin="dense"
-          />
-          {adminError && (
-            <Typography color="error" variant="body2">
-              {adminError}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAdminLoginDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleAdminLoginSubmit} color="primary">
-            Login
-          </Button>
-        </DialogActions>
-      </Dialog> */}
-    </div>
+    </Box>
   );
 }
