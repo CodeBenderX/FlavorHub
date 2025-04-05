@@ -1,34 +1,73 @@
 import React, { useState } from 'react';
-import { Card, CardContent, TextField, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Box } from '@mui/material';
+import { 
+  Card, 
+  CardContent, 
+  TextField, 
+  Typography, 
+  Button, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle, 
+  Grid, 
+  Box,
+  useMediaQuery,
+  useTheme 
+} from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { create } from './api-user';
-import loginpage from '../src/assets/login-signup.jpeg'
+import loginpage from '../src/assets/login-signup.jpeg';
 
 const useStyles = {
+  rootContainer: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    bgcolor: '#f9f9f9',
+    padding: { xs: 2, sm: 0 }
+  },
   card: {
     maxWidth: 500,
     margin: 'auto',
     textAlign: 'center',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: { xs: 0, sm: 5 },
     paddingBottom: 2,
-    borderRadius: '10px'
-  },
-  error: {
-    verticalAlign: 'middle'
+    borderRadius: '10px',
+    boxShadow: { xs: 'none', sm: '0px 2px 10px rgba(0,0,0,0.1)' }
   },
   title: {
     marginTop: 2,
-    color: '#DA3743'
+    color: '#DA3743',
+    fontSize: { xs: '1.5rem', sm: '1.75rem' },
+    fontWeight: 'bold'
   },
   textField: {
-    width: '100%'
+    width: '100%',
+    maxWidth: 400,
+    margin: '8px auto'
   },
   submit: {
     margin: 'auto',
     marginBottom: 2,
     color: '#F5F5F5',
-    background: '#000000'
+    background: '#000000',
+    width: { xs: '100%', sm: 'auto' },
+    padding: { xs: '10px 0', sm: '6px 16px' }
+  },
+  imageContainer: {
+    display: { xs: 'none', md: 'flex' },
+    height: '100vh'
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+  },
+  linkText: {
+    mt: 2,
+    fontSize: { xs: '0.9rem', sm: '1rem' }
   }
 };
 
@@ -45,16 +84,29 @@ export default function Signup() {
   });
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  /**
+   * Handles changes to form inputs
+   * @param {string} name - The name of the field being changed
+   * @returns {function} - Event handler for the input change
+   */
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value });
   };
 
+  /**
+   * Closes the success dialog and navigates to signin page
+   */
   const handleClose = () => {
     setValues({ ...values, open: false });
     navigate('/signin');
   };
 
+  /**
+   * Validates and submits the signup form
+   */
   const clickSubmit = () => {
     if (!values.name || !values.email || !values.password || !values.confirmPassword || !values.securityQuestion || !values.securityAnswer) {
       setValues({ ...values, error: "All fields are required" });
@@ -102,12 +154,12 @@ export default function Signup() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center',bgcolor: '#f9f9f9' }}>
-      <Grid container spacing={0} sx={{ maxWidth: '100%'}}>
-        <Grid item xs={12} md={6}>
+    <Box sx={useStyles.rootContainer}>
+      <Grid container spacing={0} sx={{ width: '100%', margin: 0 }}>
+        <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center' }}>
           <Card sx={useStyles.card}>
             <CardContent>
-              <Typography variant="h6" sx={{...useStyles.title, fontWeight: 'bold'}}>
+              <Typography variant="h6" sx={useStyles.title}>
                 Create Account
               </Typography>
               <TextField
@@ -145,7 +197,7 @@ export default function Signup() {
                 onChange={handleChange('confirmPassword')}
                 margin="normal"
               />
-               <TextField
+              <TextField
                 id="securityQuestion"
                 label="Security Question"
                 sx={useStyles.textField}
@@ -167,34 +219,38 @@ export default function Signup() {
                   {values.error}
                 </Typography>
               )}
-              <Button variant="contained" onClick={clickSubmit} sx={{ ...useStyles.submit, mt: 2 }}>
+              <Button 
+                variant="contained" 
+                onClick={clickSubmit} 
+                sx={useStyles.submit}
+                fullWidth={isMobile}
+              >
                 Sign up
               </Button>
-              <Typography component="p" color="#000000" sx={{ mt: 2 }}>
+              <Typography component="p" color="#000000" sx={useStyles.linkText}>
                 Have an account? <Link to="/signin">Login</Link>
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Grid item xs={12} md={6} sx={useStyles.imageContainer}>
           <Box
             component="img"
-            sx={{
-              maxWidth: '100%',
-              width: '100%',
-              height: '100vh',
-              objectFit: 'cover',
-            }}
+            sx={useStyles.image}
             alt="Healthy food"
             src={loginpage}
           />
         </Grid>
       </Grid>
+      
+      {/* Success Dialog */}
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle id="alert-dialog-title">
           {"Account Created Successfully"}
