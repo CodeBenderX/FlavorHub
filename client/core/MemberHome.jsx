@@ -406,7 +406,7 @@ export default function MemberHome() {
           height: "100vh",
         }}
       >
-        <CircularProgress />
+        <CircularProgress data-testid="loading-spinner" />
       </Container>
     );
   }
