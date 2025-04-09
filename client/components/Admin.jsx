@@ -266,9 +266,9 @@ export default function AdminDashboard() {
                   <Button variant="outlined" onClick={() => openPasswordDialog(user)} sx={{ mr: 1 }}>
                     Reset Password
                   </Button>
-                  <Button variant="outlined" onClick={() => handleShowRecipes(user)} sx={{ mr: 1 }}>
+                  {/* <Button variant="outlined" onClick={() => handleShowRecipes(user)} sx={{ mr: 1 }}>
                     Recipe List
-                  </Button>
+                  </Button> */}
                   {user.admin ? (
                     // If the user is admin, check if it is the current logged in admin.
                     user._id === authUser._id ? (
