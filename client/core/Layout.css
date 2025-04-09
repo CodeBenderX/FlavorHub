@@ -4,18 +4,12 @@
 
 .MuiToolbar-root {
   display: flex;
-  justify-content: space-between;
   background-color: #FFFFFF;
+  padding: 0 16px !important; /* Add some padding */
 }
 
 .MuiTypography-root {
-  flex-grow: 1;
   color: black;
-}
-
-.MuiButton-root {
-  color: black;
-  margin-left: 10px;
 }
 
 .MuiButton-text {
@@ -29,4 +23,34 @@
 
 .MuiAppBar-root {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Drawer styles */
+.MuiDrawer-paper {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  width: 250px;
+}
+
+/* Mobile menu items */
+.MuiListItem-root {
+  justify-content: center;
+  padding: 8px 16px;
+}
+
+/* Animation styles */
+.menu-button {
+  transition: all 0.3s ease;
+}
+
+/* Drawer overlay */
+.mobile-menu-overlay {
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+/* Menu item animations */
+.menu-item {
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
