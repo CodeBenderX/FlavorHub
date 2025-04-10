@@ -89,7 +89,7 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
           msOverflowStyle: "none",
           "&::-webkit-scrollbar": { display: "none" },
           scrollBehavior: "smooth",
-          padding: "8px 0", // Add some vertical padding
+          padding: "8px 0", 
         }}
       >
         {featuredRecipes && featuredRecipes.length > 0 ? (
@@ -208,7 +208,7 @@ export default function MemberHome() {
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [displayCount, setDisplayCount] = useState(8); // New state variable
+  const [displayCount, setDisplayCount] = useState(8); 
   const [debug, setDebug] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -216,7 +216,6 @@ export default function MemberHome() {
   const location = useLocation();
 
   const getImageUrl = useCallback((recipe) => {
-    // If the image is already a valid data URL, return it
     if (typeof recipe.image === "string" && recipe.image.startsWith("data:")) {
       return recipe.image;
     }
@@ -228,7 +227,6 @@ export default function MemberHome() {
         typeof recipe.image.data === "object" &&
         recipe.image.data.type === "Buffer"
       ) {
-        // Convert Buffer data to base64 string
         imageData = btoa(
           String.fromCharCode.apply(null, recipe.image.data.data)
         );
@@ -262,11 +260,11 @@ export default function MemberHome() {
       if (data && data.error) {
         setError(data.error);
       } else {
-        // Construct full image URL for user-uploaded images, or use default image
+        
         const dbRecipes = data.map((recipe) => ({
           ...recipe,
           image: getImageUrl(recipe),
-          //isDefault: false,
+          
         }));
         const sortedRecipes = dbRecipes.sort(
           (a, b) => new Date(b.created) - new Date(a.created)
@@ -283,11 +281,9 @@ export default function MemberHome() {
     }
   };
 
-  // 4) The function that actually does the search logic (backend + local)
   const performSearch = async (query) => {
     const jwt = auth.isAuthenticated();
     if (!query.trim()) {
-      // Empty query => show all recipes
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
       return;
@@ -306,11 +302,6 @@ export default function MemberHome() {
         ? creatorData
         : [];
 
-      // Local filter
-      // const localResults = allRecipes.filter(r =>
-      //   r.title.toLowerCase().includes(query.toLowerCase()) ||
-      //   (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
-      // );
       const localResults = allRecipes.filter(
         (r) =>
           r.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -319,7 +310,6 @@ export default function MemberHome() {
           (r.category && r.category.toLowerCase().includes(query.toLowerCase()))
       );
 
-      // Merge & remove duplicates
       const merged = [
         ...new Map(
           [
@@ -330,7 +320,6 @@ export default function MemberHome() {
         ).values(),
       ];
 
-      // Convert images
       const finalResults = merged.map((r) => ({
         ...r,
         image: getImageUrl(r),
@@ -345,22 +334,18 @@ export default function MemberHome() {
     }
   };
 
-  // 5) The form submission handler: updates the URL with ?search=...
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Suppose your route is /member
       navigate(`/member?search=${encodeURIComponent(searchQuery)}`);
       performSearch(searchQuery);
     } else {
-      // If empty, remove any query param, reset to show all recipes
       navigate(`/member`);
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
     }
   };
 
-  // 6) On mount or whenever the URL changes, read the query param & run search
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryParam = params.get("search");
@@ -368,18 +353,16 @@ export default function MemberHome() {
       setSearchQuery(queryParam);
       performSearch(queryParam);
     } else if (!queryParam && allRecipes.length > 0) {
-      // If no search param => show all recipes
+      
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
     }
   }, [location.search, allRecipes]);
 
-  // 1. In handleSearchInputChange, just update searchQuery:
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
     if (value.trim() === "") {
-      // When input is cleared, update the URL and reset recipes
       navigate(`/member`);
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
@@ -387,7 +370,7 @@ export default function MemberHome() {
   };
 
   const handleViewRecipe = (recipe) => {
-    // Pass the entire location, including ?search=...
+    
     navigate(`/viewrecipe?id=${recipe._id}`, { state: { from: location } });
   };
 
@@ -429,7 +412,7 @@ export default function MemberHome() {
         maxWidth="lg"
         sx={{
           width: { xs: "95%", md: "90%", lg: "80%" },
-          px: { xs: 0, sm: 2 }, // Adjust horizontal padding
+          px: { xs: 0, sm: 2 }, 
         }}
       >
         <section>
@@ -468,7 +451,7 @@ export default function MemberHome() {
                   color: "white",
                   mb: 0,
                   lineHeight: 1.5,
-                  fontSize: { xs: "1.3rem", sm: "2.5rem", md: "3rem" }, // Responsive font size
+                  fontSize: { xs: "1.3rem", sm: "2.5rem", md: "3rem" }, 
                   fontStyle: "bold",
                 }}
               >
@@ -515,25 +498,25 @@ export default function MemberHome() {
                       whiteSpace: "normal",
                       textOverflow: "ellipsis",
                       display: "-webkit-box",
-                      WebkitLineClamp: 2, // Limits to 2 lines
+                      WebkitLineClamp: 2, 
                       WebkitBoxOrient: "vertical",
                       overflow: "hidden",
                     },
                     "& .MuiInputBase-input::placeholder": {
                       opacity: 1,
                       color: "text.secondary",
-                      whiteSpace: "normal", // Allows placeholder to wrap
+                      whiteSpace: "normal", 
                       textOverflow: "ellipsis",
                       display: "-webkit-box",
-                      WebkitLineClamp: 2, // Limits to 2 lines
+                      WebkitLineClamp: 2, 
                       WebkitBoxOrient: "vertical",
                       overflow: "hidden",
                     },
                     "& .MuiInputBase-root": {
-                      height: "auto", // Allows height to adjust
-                      minHeight: 56, // Minimum height
-                      alignItems: "flex-start", // Aligns text to top
-                      paddingBottom: { xs: "20px", sm: "5px" }, // Adds some bottom padding
+                      height: "auto", 
+                      minHeight: 56, 
+                      alignItems: "flex-start", 
+                      paddingBottom: { xs: "20px", sm: "5px" }, 
                     },
                   }}
                   InputProps={{
@@ -688,7 +671,7 @@ export default function MemberHome() {
               </Grid>
             ))}
           </Grid>
-          {displayCount < filteredRecipes.length && ( // Load More button
+          {displayCount < filteredRecipes.length && ( 
             <Button
               variant="contained"
               color="primary"
@@ -696,7 +679,7 @@ export default function MemberHome() {
               fullWidth
               sx={{
                 mt: 2,
-                py: { xs: 1, sm: 1.5 }, // Adjust vertical padding
+                py: { xs: 1, sm: 1.5 }, 
                 border: "1px solid #DA3743",
                 color: "#DA3743",
                 backgroundColor: "transparent",
