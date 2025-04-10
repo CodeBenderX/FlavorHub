@@ -47,7 +47,7 @@ const AddRecipePage = () => {
     preptime: "",
     cooktime: "",
     servings: "",
-    // New field: Category with default value "Miscellaneous"
+    
     category: "Miscellaneous",
     image: "",
   });
@@ -113,7 +113,7 @@ const AddRecipePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted", values); // Debug log
+    console.log("Form submitted", values);
 
     if (!isAuthenticated) {
       setError("You must be logged in to create a recipe.");
