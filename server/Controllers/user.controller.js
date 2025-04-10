@@ -75,8 +75,8 @@ const remove = async (req, res) => {
 
 const setAdmin = async (req, res) => {
     try {
-      let user = req.profile; // Assume userByID middleware has loaded the user
-      user.admin = req.body.admin; // Set admin field based on request body
+      let user = req.profile; 
+      user.admin = req.body.admin; 
       await user.save();
       user.hashed_password = undefined;
       user.salt = undefined;
@@ -89,17 +89,17 @@ const setAdmin = async (req, res) => {
   }
   const updateSecurity = async (req, res) => {
     try {
-      let user = req.profile; // Loaded via router.param
+      let user = req.profile; 
       const { securityQuestion, securityAnswerPlain } = req.body;
       if (!securityQuestion || !securityAnswerPlain) {
         return res.status(400).json({ error: "Security question and answer are required." });
       }
-      // Update the security question and use the virtual setter for securityAnswerPlain
+      
       user.securityQuestion = securityQuestion;
       user.securityAnswerPlain = securityAnswerPlain;
       user.updated = Date.now();
       await user.save();
-      // Remove sensitive fields before sending the response
+      
       user.hashed_password = undefined;
       user.salt = undefined;
       res.json({ message: "Security question and answer updated successfully", user });
@@ -109,7 +109,7 @@ const setAdmin = async (req, res) => {
   }
   const updatePassword = async (req, res) => {
     try {
-      let user = req.profile; // Loaded via router.param('userId', userCtrl.userByID)
+      let user = req.profile; 
       const { password } = req.body;
       if (!password) {
         return res.status(400).json({ error: "Password is required." });
@@ -117,11 +117,11 @@ const setAdmin = async (req, res) => {
       if (password.length < 6) {
         return res.status(400).json({ error: "Password must be at least 6 characters." });
       }
-      // Set the new password (using your virtual setter, which will update salt and hashed_password)
+      
       user.password = password;
       user.updated = Date.now();
       await user.save();
-      // Remove sensitive fields before sending the response
+      
       user.hashed_password = undefined;
       user.salt = undefined;
       res.json({ message: "Password updated successfully", user });
