@@ -1,6 +1,5 @@
 import User from '../Models/user.model.js'
 import jwt from 'jsonwebtoken'
-//import expressJwt from 'express-jwt'
 import { expressjwt } from "express-jwt";
 import config from '../config/config.js'
 const signin = async (req, res) => {
@@ -65,25 +64,24 @@ const requireSignin = expressjwt({
       }
       const forgotPassword = async (req, res) => {
         try {
-          // Look up the user by email from the request body
+          
           let user = await User.findOne({ "email": req.body.email });
           if (!user)
             return res.status(401).json({ error: "User not found" });
           
-          // Generate a reset token similar to signin.
+          
           const resetToken = jwt.sign(
             { _id: user._id, email: user.email },
             config.jwtSecret,
-            { expiresIn: '1h' } // Token valid for 1 hour
+            { expiresIn: '1h' } 
           );
           
-          // Retrieve the security question from the user's record
-          // If no security question is set, you can send a default message or handle it accordingly.
+          
           const securityQuestion = user.securityQuestion || "No security question registered.";
       
-          // Return the reset token and the security question so that the frontend dialog can display it.
+          
           return res.json({
-            //message: "Reset instructions have been generated. Security question retrieved.",
+            
             token: resetToken,
             securityQuestion: securityQuestion
           });
@@ -94,18 +92,18 @@ const requireSignin = expressjwt({
       const verifySecurityAnswer = async (req, res) => {
         try {
           const { email, securityAnswer } = req.body;
-          // Find the user by email
+          
           let user = await User.findOne({ email });
           if (!user) {
             return res.status(404).json({ error: "User not found" });
           }
       
-          // Compare the provided securityAnswer with what's in the database
+          
           if (!user.authenticateSecurityAnswer(securityAnswer)) {
             return res.status(400).json({ error: "Incorrect security answer" });
           }
       
-          // If the answer matches, return a success message
+          
           return res.json({ message: "Security answer verified." });
         } catch (err) {
           console.error(err);
@@ -115,14 +113,12 @@ const requireSignin = expressjwt({
       const resetPassword = async (req, res) => {
         try {
           const { email, newPassword } = req.body;
-          // Find the user by email
+          
           let user = await User.findOne({ email });
           if (!user) {
             return res.status(404).json({ error: "User not found" });
           }
       
-          // Update the user's password
-          // Make sure your User model or a pre-save hook hashes the password
           user.password = newPassword;
           await user.save();
       
@@ -133,14 +129,14 @@ const requireSignin = expressjwt({
         }
       }   
       const isAdmin = (req, res, next) => {
-        // Check if req.profile (loaded by userByID) exists and if admin flag is true
+        
         if (req.auth && req.auth.admin === true) {
           return next();
         }
         return res.status(403).json({ error: "User is not authorized as admin" });
       };
       export const canUpdateUser = (req, res, next) => {
-        // Check if the authenticated user's ID matches the target user's ID or if the authenticated user is an admin
+        
         if (req.auth && (req.auth._id === req.profile._id || req.auth.admin === true)) {
           return next();
         }
