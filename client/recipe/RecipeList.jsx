@@ -78,10 +78,8 @@ export default function RecipeList() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the current user
   const currentUser = auth.isAuthenticated()?.user || {};
 
-  // NEW: Read the "creator" query parameter from the URL
   const params = new URLSearchParams(location.search);
   const creatorQuery = params.get("creator");
 
@@ -122,19 +120,19 @@ export default function RecipeList() {
       }
 
       const data = await response.json();
-       // Sort recipes by the created date (newest first)
+       
     const sortedData = data.sort(
       (a, b) => new Date(b.created) - new Date(a.created)
     )
       if (!creatorQuery) {
-        // Show only the logged in user's recipes if no creator query parameter exists
+       
         const userRecipes = data.filter(
           (recipe) => recipe.creator === jwt.user.name
         );
       setRecipes(userRecipes);
       setTotalPages(Math.ceil(userRecipes.length / itemsPerPage));
     } else {
-      // Otherwise, show all recipes by the specified creator
+      
       setRecipes(data);
       setTotalPages(Math.ceil(data.length / itemsPerPage));
     }
@@ -153,14 +151,7 @@ export default function RecipeList() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    // const added = params.get("added");
-    // if (added === "true") {
-    //   setConfirmationDialog({
-    //     open: true,
-    //     title: "Recipe Added",
-    //     message: "Your recipe has been successfully added.",
-    //   });
-    // }
+    
     if (params.get("added") === "true") {
       setConfirmationDialog({
         open: true,
@@ -332,9 +323,7 @@ export default function RecipeList() {
                       alt={recipe.title}
                       sx={{ width: 60, height: 60 }}
                       variant="rounded"
-                      // imgProps={{
-                      //   onError: () => handleImageError(recipe._id),
-                      // }}
+                      
                     />
                   ) : (
                     <Avatar
