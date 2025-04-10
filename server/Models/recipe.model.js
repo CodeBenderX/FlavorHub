@@ -4,7 +4,7 @@ const commentSchema = new mongoose.Schema({
   name: String,
   email: String,
   text: String,
-  rating: Number,         // <-- store 1 to 5
+  rating: Number,         
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -49,7 +49,7 @@ const recipeSchema = new mongoose.Schema({
     default: Date.now
   },
   category: {
-    type: String, // <-- Added category field
+    type: String, 
     trim: true,
   },
   comments: [commentSchema]
