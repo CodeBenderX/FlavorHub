@@ -147,7 +147,6 @@ const transferRecipesToAdmin = async (params, credentials) => {
   }
 };
 
-// Update a comment on a recipe
 const updateRecipeComment = async (recipeId, commentId, { text, rating }) => {
   try {
     const response = await fetch(`/api/recipes/${recipeId}/comments/${commentId}`, {
@@ -156,7 +155,7 @@ const updateRecipeComment = async (recipeId, commentId, { text, rating }) => {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: `Bearer ${auth.isAuthenticated().token}`,
-        //'Authorization': 'Bearer ' + credentials.t
+        
       },
       body: JSON.stringify({ text, rating }),
     });
@@ -166,7 +165,6 @@ const updateRecipeComment = async (recipeId, commentId, { text, rating }) => {
   }
 };
 
-// Delete a comment from a recipe
 const deleteRecipeComment = async (recipeId, commentId) => {
   try {
     const response = await fetch(`/api/recipes/${recipeId}/comments/${commentId}`, {
@@ -175,12 +173,12 @@ const deleteRecipeComment = async (recipeId, commentId) => {
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: `Bearer ${auth.isAuthenticated().token}`,
-        //'Authorization': 'Bearer ' + credentials.t
+        
       },
     });
     const data = await response.json();
     if (!response.ok) {
-      // Throw an error with details returned by the server
+      
       throw new Error(data.error || "Could not delete comment");
     }
     return data;
@@ -189,7 +187,6 @@ const deleteRecipeComment = async (recipeId, commentId) => {
   }
 };
 
-//List Recipe by Ingredient - used to implement the api code that Byron created in back end
 const listByIngredient = async (params, token, signal) => {
   try {
     const response = await fetch(`/api/recipes/ingredient=${params.ingredient}`, {
