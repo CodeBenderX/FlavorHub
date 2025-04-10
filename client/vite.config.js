@@ -21,12 +21,12 @@ export default defineConfig({
     build: {
         outDir: '../dist/app',
         assetsDir: 'assets',
-        chunkSizeWarningLimit: 1000, // Increase the warning limit to 1000 kB
+        chunkSizeWarningLimit: 1000, 
         rollupOptions: {
           output: {
             manualChunks: {
               vendor: ['react', 'react-dom', 'react-router-dom'],
-              // Add other large dependencies here
+
             },
             assetFileNames: (assetInfo) => {
               let extType = assetInfo.name.split('.').at(1);
