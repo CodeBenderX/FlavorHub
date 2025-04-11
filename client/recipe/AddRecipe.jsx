@@ -209,7 +209,7 @@ const AddRecipePage = () => {
                 error={!!errors.title}
                 helperText={errors.title}
               />
-               {/* New: Category Dropdown */}
+               
                <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="category-label">Category</InputLabel>
                 <Select
