@@ -87,26 +87,18 @@ export default function Signup() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  /**
-   * Handles changes to form inputs
-   * @param {string} name - The name of the field being changed
-   * @returns {function} - Event handler for the input change
-   */
+  
   const handleChange = name => event => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  /**
-   * Closes the success dialog and navigates to signin page
-   */
+  
   const handleClose = () => {
     setValues({ ...values, open: false });
     navigate('/signin');
   };
 
-  /**
-   * Validates and submits the signup form
-   */
+  
   const clickSubmit = () => {
     if (!values.name || !values.email || !values.password || !values.confirmPassword || !values.securityQuestion || !values.securityAnswer) {
       setValues({ ...values, error: "All fields are required" });

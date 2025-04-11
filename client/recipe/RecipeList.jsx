@@ -264,15 +264,14 @@ export default function RecipeList() {
           Recipes
         </Typography>
 
-        {/* 3. If a creator query exists, display a header showing recipes by that creator */}
+        
         {creatorQuery && (
           <Typography variant="subtitle1" sx={{ mb: 3, textAlign: "center" }}>
             Showing recipes by: <strong>{creatorQuery}</strong>
           </Typography>
         )}
 
-        {/* If a creatorQuery exists and doesn't match the current user, 
-            we hide the "Add New Recipe" button. */}
+        
         {(!creatorQuery || creatorQuery === currentUser.name) && (
         <Link to="/addrecipe" style={{ textDecoration: "none" }}>
           <Button
@@ -352,7 +351,7 @@ export default function RecipeList() {
                   >
                     View Recipe
                   </Button>
-                  {/* Only show Edit/Delete if the user is the recipe creator OR user is admin */}
+                  
                   {(recipe.creator === auth.isAuthenticated().user.name ||
                     auth.isAuthenticated().user.role === 'admin') && (
                   <>

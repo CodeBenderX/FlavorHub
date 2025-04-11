@@ -244,13 +244,10 @@ const UserAccount = () => {
           <Typography variant="h5" component="div">
             Welcome, {user?.name || "User"}
           </Typography>
-          {/* <Typography variant="body2" color="text.secondary">
-            Your ID: {user?._id || 'No ID available'}
-          </Typography> */}
         </CardContent>
       </Card>
 
-      {/* Update Form */}
+      
       <Card sx={{ maxWidth: 500, width: "100%" }}>
         <CardContent>
           <Typography variant="h6">Update Your Information</Typography>
@@ -348,7 +345,7 @@ const UserAccount = () => {
             </>
           )}
 
-          {/* Update Button */}
+          
           <Button
             
             onClick={handleUpdate}
@@ -356,13 +353,13 @@ const UserAccount = () => {
             disabled={isUpdating || !updateType}
             sx={{ marginTop: 2, color:"#000000", border: "1px solid #000000", backgroundColor: "#FFFFFF", "&:hover":{backgroundColor:"#000000", color:"#FFFFFF"}}}
           >
-            {/* Update */}
+            
             {isUpdating ? "Updating..." : "Update"}
           </Button>
         </CardContent>
       </Card>
 
-      {/* Delete Account */}
+     
       {!isAdmin && (
       <Card sx={{ maxWidth: 500, width: "100%" }}>
         <CardContent>

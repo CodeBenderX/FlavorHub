@@ -25,7 +25,7 @@ export default function Footer() {
     >
       <Container maxWidth="lg">
         <Grid container spacing={{ xs: 2, md: 4 }}>
-          {/* Logo and Copyright Section */}
+          
           <Grid item xs={12} md={4} sx={{ textAlign: { xs: 'center', md: 'left' } }}>
             <Box sx={{ mb: 2 }}>
               <Typography variant="h6" color="#FF6E1C" sx={{ display: 'inline-flex' }}>
@@ -45,7 +45,7 @@ export default function Footer() {
             </Typography>
           </Grid>
           
-          {/* Quick Links Section */}
+          
           <Grid item xs={6} md={4}>
             <Typography 
               variant="h6" 
@@ -75,7 +75,7 @@ export default function Footer() {
             </Box>
           </Grid>
           
-          {/* Social Links Section */}
+          
           <Grid item xs={6} md={4}>
             <Typography 
               variant="h6" 

@@ -508,7 +508,7 @@ export default function ViewRecipe() {
           )}
         </Box>
 
-        {/* Comments Section */}
+        
         <Box
           sx={{
             maxWidth: 800,
@@ -524,7 +524,7 @@ export default function ViewRecipe() {
             Comments
           </Typography>
 
-          {/* Display existing comments (if any) */}
+          
           {recipe.comments && recipe.comments.length > 0 ? (
             recipe.comments.map((comment, index) => (
               <Box
@@ -540,7 +540,7 @@ export default function ViewRecipe() {
                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                   {comment.name} &mdash; {comment.email}
                 </Typography>
-                 {/* UPDATED: Show edit and delete icons if this comment belongs to the current user */}
+                 
                  {currentUser.email === comment.email && (
                     <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
                       <IconButton onClick={() => handleEditClick(comment)} size="small">
@@ -551,7 +551,7 @@ export default function ViewRecipe() {
                       </IconButton>
                     </Box>
                   )}
-                {/* Display star rating if it exists */}
+                
                 <Rating
                   name="read-only"
                   value={comment.rating || 0}
@@ -570,7 +570,7 @@ export default function ViewRecipe() {
             <Typography>No comments yet.</Typography>
           )}
 
-          {/* Only show "Leave a Comment" form if NOT the recipe owner */}
+          
           {!isCreator && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
@@ -592,7 +592,7 @@ export default function ViewRecipe() {
                 disabled
                 sx={{ mb: 2 }}
               />
-              {/* Star Rating */}
+              
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Typography sx={{ mr: 1 }}>Rating:</Typography>
                 <Rating
@@ -622,7 +622,7 @@ export default function ViewRecipe() {
           )}
         </Box>
 
-          {/* Validation Error Dialog */}
+          
         <Dialog open={validationErrorDialogOpen} onClose={handleValidationErrorDialogClose}>
           <DialogTitle>Error</DialogTitle>
           <DialogContent>
@@ -637,7 +637,7 @@ export default function ViewRecipe() {
           </DialogActions>
         </Dialog>
 
-         {/* Delete Confirmation Dialog */}  
+          
         <Dialog
           open={deleteDialog}
           onClose={() => setDeleteDialog(false)}
@@ -653,72 +653,7 @@ export default function ViewRecipe() {
             <Button onClick={confirmDelete} color="error">Delete</Button>
           </DialogActions>
         </Dialog>
-        {/* ----------------------- COMMENTS SECTION -----------------------
-        <Box
-          sx={{
-            maxWidth: 800,
-            mx: 'auto',
-            mt: 3,
-            p: 2,
-            bgcolor: 'white',
-            borderRadius: '8px',
-            border: '1px solid #e0e0e0',
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Comments
-          </Typography> */}
-
-          {/* Display existing comments (if any) */}
-          {/* {recipe.comments && recipe.comments.length > 0 ? (
-            recipe.comments.map((comment, index) => (
-              <Box
-                key={index}
-                sx={{
-                  mb: 2,
-                  p: 2,
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '4px',
-                }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                  {comment.authorName}
-                </Typography>
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
-                  {comment.text}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {new Date(comment.createdAt).toLocaleString()}
-                </Typography>
-              </Box>
-            ))
-          ) : (
-            <Typography>No comments yet.</Typography>
-          )} */}
-
-          {/* Only show "Leave a Comment" form if NOT the recipe owner */}
-          {/* {!isCreator && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Leave a Comment
-              </Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Write your comment here..."
-                sx={{ mb: 1 }}
-              />
-              <Button variant="contained" onClick={handleSubmitComment}>
-                Submit
-              </Button>
-            </Box>
-          )}
-        </Box> */}
-
-        {/* ===================== EDIT COMMENT DIALOG ===================== */}
+        
         <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
           <DialogTitle>Edit Comment</DialogTitle>
           <DialogContent>
@@ -746,7 +681,7 @@ export default function ViewRecipe() {
             <Button onClick={handleSaveComment} variant="contained">Save</Button>
           </DialogActions>
         </Dialog>
-        {/* ===================== END EDIT COMMENT DIALOG ===================== */}
+        
   </Box>
 </ThemeProvider>
 );

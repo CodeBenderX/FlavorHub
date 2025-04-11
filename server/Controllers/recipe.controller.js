@@ -70,12 +70,6 @@ const createRecipe = async (req, res) => {
       if (!ingredientFilter) {
         return res.status(400).json({"message": "No ingredient filter specified"})
       }
-
-      /*
-      let recipes = await Recipe.find({
-        ingredients: new RegExp(ingredientFilter, 'i')
-      });
-      */
         
       const ingredientsArray = ingredientFilter.map(ingredient => ingredient.trim());
       const regexArray = ingredientsArray.map(ingredient => new RegExp(ingredient, 'i'));

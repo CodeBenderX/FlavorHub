@@ -18,8 +18,6 @@ export default function AboutPage() {
     <div style={{ backgroundColor: "#f9f9f9" }}>
       <Box sx={{ width: "80%", margin: "auto", padding: 4 }}>
         {" "}
-        {/* Full-page layout */}
-        {/* About FreshPlate Heading */}
         <Typography
           variant="h3"
           component="h1"
@@ -47,7 +45,6 @@ export default function AboutPage() {
             you craft fresh, delicious meals with ease.
           </Typography>
         </Box>
-        {/* About FreshPlate Section */}
         <Grid container spacing={4} sx={{ paddingX: 4, alignItems: "center" }}>
           <Grid
             item
@@ -180,7 +177,6 @@ export default function AboutPage() {
             />
           </Grid>
         </Grid>
-        {/* Meet the Team Section */}
         <Box sx={{ marginTop: 6 }}>
           <Typography
             variant="h5"
