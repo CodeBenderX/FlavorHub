@@ -288,7 +288,7 @@ export default function AdminDashboard() {
         </Table>
       </TableContainer>
 
-      {/* Reset Security Q/A Dialog */}
+      
       <Dialog open={securityDialogOpen} onClose={closeSecurityDialog}>
         <DialogTitle>Reset Security Question &amp; Answer</DialogTitle>
         <DialogContent>
@@ -322,7 +322,7 @@ export default function AdminDashboard() {
         </DialogActions>
       </Dialog>
 
-      {/* Reset Password Dialog */}
+      
       <Dialog open={passwordDialogOpen} onClose={closePasswordDialog}>
         <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
         </DialogActions>
       </Dialog>
 
-      {/* Recipe List Dialog */}
+      
       <Dialog open={recipeDialogOpen} onClose={() => setRecipeDialogOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle>{recipeUser ? `${recipeUser.name}'s Recipes` : "Recipes"}</DialogTitle>
         <DialogContent>
@@ -393,7 +393,7 @@ export default function AdminDashboard() {
           </Button>
         </DialogActions>
       </Dialog>
-       {/* Comment Dialog */}
+       
        <Dialog open={commentDialogOpen} onClose={closeCommentDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
           Comments for {selectedRecipeForComments && selectedRecipeForComments.title}
