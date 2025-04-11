@@ -11,8 +11,11 @@ const createRecipe = async (req, res) => {
         message: "Image could not be uploaded",
       });
     }
-    Object.keys(fields).forEach((key) => (fields[key] = fields[key][0]));
-    Object.keys(files).forEach((key) => (files[key] = files[key][0]));
+    Object.keys(fields).forEach((key) => {fields[key] = fields[key][0]});
+    
+    if (!fields.category) {
+      fields.category = "Miscellaneous";}
+    Object.keys(files).forEach((key) => {files[key] = files[key][0]});
     let recipe = new Recipe(fields);
     recipe.creator = req.auth.name
     if (files.image) {
@@ -32,7 +35,7 @@ const createRecipe = async (req, res) => {
 
   const getAllRecipes = async (req, res) => {
     try {
-      let recipes = await Recipe.find().select('title ingredients instructions creator preptime cooktime servings created updated image');
+      let recipes = await Recipe.find().select('title ingredients instructions creator preptime cooktime servings category created updated image');
       
       recipes = recipes.map(recipe => {
         const recipeObj = recipe.toObject();
@@ -57,7 +60,7 @@ const createRecipe = async (req, res) => {
     }
   };
   
-  // [Mar 9, 2025] Byron
+  
   const getRecipesByFilter = async (req, res) => {
     try {
       const ingredientFilter = req.params['ingredient'].split(','); 
@@ -81,7 +84,7 @@ const createRecipe = async (req, res) => {
       });
   
       if (recipes.length === 0) {
-        //return res.status(400).json({"message": `No recipes found that matches ingredient filter: ${ingredientFilter}`})
+        
         return res.status(200).json([])
       }
       else {
@@ -302,13 +305,11 @@ const remove = async (req, res) => {
   }
 };
 
-// Controllers/recipe.controller.js (example)
 const addComment = async (req, res) => {
   try {
-    const recipe = req.recipe; // because of recipeByID
+    const recipe = req.recipe; 
     const { name, email, text, rating } = req.body;
 
-    // Build the new comment object
     const newComment = {
       name,
       email,
@@ -317,33 +318,21 @@ const addComment = async (req, res) => {
       createdAt: new Date()
     };
 
-    // Push to recipe's comments array
     recipe.comments.push(newComment);
     await recipe.save();
 
-    return res.json(recipe); // return updated recipe
+    return res.json(recipe); 
   } catch (err) {
     console.error(err);
     return res.status(400).json({ error: 'Could not add comment' });
   }
 };
 
-// const getRecipesByCreator = async (req, res) => {
-//   try {
-//     // Find recipes whose "creator" field matches req.params.name
-//     const recipes = await Recipe.find({ creator: req.params.name });
-//     res.json(recipes);
-//   } catch (err) {
-//     res.status(400).json({ error: "Could not fetch recipes" });
-//   }
-// };
-
 const getRecipesByCreator = async (req, res) => {
   try {
     let recipes = await Recipe.find({ creator: { $regex: req.params.name, $options: 'i' } })
       .select("title ingredients instructions creator preptime cooktime servings image");
 
-    // Convert each recipe’s image buffer into a base64 string
     recipes = recipes.map((recipe) => {
       const recipeObj = recipe.toObject();
       if (recipeObj.image && recipeObj.image.data) {
@@ -369,25 +358,21 @@ const deleteComment = async (req, res) => {
     const { recipeId, commentId } = req.params;
     console.log("Attempting deletion: recipe", recipeId, "comment", commentId);
 
-    // Find the recipe by its ID
     const recipe = await Recipe.findById(recipeId);
     if (!recipe) {
       return res.status(404).json({ error: "Recipe not found" });
     }
 
-    // Find the comment subdocument by ID
     const comment = recipe.comments.id(commentId);
     if (!comment) {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    // Authorization check: only allow deletion if the authenticated user's email matches the comment's email
     if (req.auth.email !== comment.email) {
       return res.status(403).json({ error: "User not authorized to delete this comment" });
     }
 
 
-    // Use pull to remove the comment from the array
     recipe.comments.pull(commentId);
     await recipe.save();
     return res.json({ message: "Comment deleted successfully", recipe });
@@ -400,13 +385,13 @@ const deleteComment = async (req, res) => {
 const getCommentsByUser = async (req, res) => {
   try {
     const email = req.params.email;
-    // Find recipes that contain comments where the comment email matches
+    
     const recipes = await Recipe.find({ "comments.email": email });
     let comments = [];
     recipes.forEach(recipe => {
-      // Filter the recipe's comments for those made by the user
+      
       const userComments = recipe.comments.filter(comment => comment.email === email);
-      // For each comment, include the recipe title (for context)
+      
       userComments.forEach(comment => {
         comments.push({
           recipeId: recipe._id,
@@ -432,37 +417,33 @@ const updateComment = async (req, res) => {
     const { recipeId, commentId } = req.params;
     const { text, rating } = req.body;
     
-    // Validate the incoming data
+    
     if (!text || text.trim() === "") {
       return res.status(400).json({ error: "Invalid comment data: text is required" });
     }
-    // Optional: Validate rating (if required, here we assume rating must be between 0 and 5)
+    
     if (rating == null || rating < 1 || rating > 5) {
       return res.status(400).json({ error: "Invalid comment data: rating must be between 0 and 5" });
     }
 
-    // Find the recipe by ID
+    
     const recipe = await Recipe.findById(recipeId);
     if (!recipe) {
       return res.status(404).json({ error: "Recipe not found" });
     }
     
-    // Find the comment subdocument by ID
     const comment = recipe.comments.id(commentId);
     if (!comment) {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    // Authorization check: only allow update if the authenticated user's email matches the comment's email
     if (req.auth.email !== comment.email) {
       return res.status(403).json({ error: "User not authorized to update this comment" });
     }
     
-    // Update the comment properties
     comment.text = text;
     comment.rating = rating;
     
-    // Save the recipe to persist changes
     await recipe.save();
     
     res.json({ message: "Comment updated successfully", recipe });

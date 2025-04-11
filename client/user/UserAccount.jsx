@@ -22,9 +22,9 @@ import { read, update, remove } from "./api-user.js";
 import {updateRecipeCreators, deleteUserRecipes, transferRecipesToAdmin} from "../recipe/api-recipe.js";
 
 const UserAccount = () => {
-  const [user, setUser] = useState(null); // Initialize user as null
-  const [loading, setLoading] = useState(true); // Loading state for conditional rendering
-  const [error, setError] = useState(null); // Error state for any fetch issues
+  const [user, setUser] = useState(null); 
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);
   const [updateData, setUpdateData] = useState({
     name: "",
     email: "",
@@ -32,9 +32,9 @@ const UserAccount = () => {
     confirmPassword: "",
     securityQuestion: "",
     securityAnswer: "",
-  }); // State for update form
-  const [updateType, setUpdateType] = useState(""); // Update form selector
-  const [isUpdating, setIsUpdating] = useState(false); // State to manage update button state
+  }); 
+  const [updateType, setUpdateType] = useState(""); 
+  const [isUpdating, setIsUpdating] = useState(false); 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false);
   const [deleteOption, setDeleteOption] = useState("");
@@ -61,7 +61,7 @@ const UserAccount = () => {
     fetchUserData();
   }, []);
 
-  // When updateType changes to "security", prepopulate updateData with current values from user
+  
   useEffect(() => {
     if (updateType === "security" && user) {
       setUpdateData((prev) => ({
@@ -72,7 +72,7 @@ const UserAccount = () => {
     }
   }, [updateType, user]);
 
-  // Handle update form changes
+  
   const handleChange = (e) => {
     setUpdateData({
       ...updateData,
@@ -80,11 +80,9 @@ const UserAccount = () => {
     });
   };
 
-  // Handle updating the user information
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    // Validate the update data
     if (updateType === "name" && !updateData.name) {
       alert("Name is required.");
       return;
@@ -104,13 +102,13 @@ const UserAccount = () => {
       }
     }
     if (updateType === "security") {
-      // Validate that both security fields are filled
+      
       if (!updateData.securityQuestion || !updateData.securityAnswer) {
         alert("Security question and answer are required.");
         return;
       }
     }
-    setIsUpdating(true); // Disable the button during update
+    setIsUpdating(true); 
     setError(null);
     const jwt = auth.isAuthenticated();
     try {
@@ -158,7 +156,7 @@ const UserAccount = () => {
       }
       setUser(updatedUser);
       setUpdateData({ name: "", email: "", password: "", confirmPassword: "", securityQuestion: "", securityAnswer: "" });
-      setUpdateType(""); // Reset the selection
+      setUpdateType(""); 
 
       alert(`${updateType.charAt(0).toUpperCase() + updateType.slice(1)} updated successfully. Please log in again.`);
       auth.clearJWT();
@@ -352,7 +350,7 @@ const UserAccount = () => {
 
           {/* Update Button */}
           <Button
-            // variant="contained"
+            
             onClick={handleUpdate}
             fullWidth
             disabled={isUpdating || !updateType}

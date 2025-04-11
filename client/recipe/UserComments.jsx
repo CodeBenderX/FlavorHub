@@ -1,131 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import {
-//   Box,
-//   Typography,
-//   CircularProgress,
-//   Alert,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   Paper,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogActions,
-//   Button,
-//   TextField,
-//   Rating
-// } from "@mui/material";
-// import auth from "../lib/auth-helper";
-
-// export default function UserComments() {
-//   const [comments, setComments] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState("");
-//   const currentUser = auth.isAuthenticated() ? auth.isAuthenticated().user : null;
-
-//   useEffect(() => {
-//     const fetchComments = async () => {
-//       if (!currentUser) {
-//         setError("User not authenticated");
-//         setLoading(false);
-//         return;
-//       }
-//       try {
-//         const jwt = auth.isAuthenticated();
-//         const response = await fetch(
-//           `/api/comments/byuser/${encodeURIComponent(currentUser.email)}`,
-//           {
-//             method: "GET",
-//             headers: {
-//               Accept: "application/json",
-//               "Content-Type": "application/json",
-//               Authorization: "Bearer " + jwt.token
-//             }
-//           }
-//         );
-//         if (!response.ok) {
-//           throw new Error("Failed to fetch comments");
-//         }
-//         const data = await response.json();
-//         setComments(data);
-//       } catch (err) {
-//         setError(err.message || "Failed to fetch comments");
-//       } finally {
-//         setLoading(false);c
-//       }
-//     };
-
-//     fetchComments();
-//   }, [currentUser]);
-
-//   if (loading) {
-//     return (
-//       <Box
-//         sx={{
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//           height: "100vh"
-//         }}
-//       >
-//         <CircularProgress />
-//       </Box>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <Box
-//         sx={{
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//           height: "100vh"
-//         }}
-//       >
-//         <Alert severity="error">{error}</Alert>
-//       </Box>
-//     );
-//   }
-
-//   return (
-//     <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
-//       <Typography variant="h4" gutterBottom>
-//         My Comments
-//       </Typography>
-//       {comments.length === 0 ? (
-//         <Typography>No comments found.</Typography>
-//       ) : (
-//         <TableContainer component={Paper}>
-//           <Table>
-//             <TableHead>
-//               <TableRow>
-//                 <TableCell>Recipe Title</TableCell>
-//                 <TableCell>Comment</TableCell>
-//                 <TableCell>Rating</TableCell>
-//                 <TableCell>Date</TableCell>
-//               </TableRow>
-//             </TableHead>
-//             <TableBody>
-//               {comments.map((comment) => (
-//                 <TableRow key={comment._id}>
-//                   <TableCell>{comment.recipeTitle}</TableCell>
-//                   <TableCell>{comment.text}</TableCell>
-//                   <TableCell>{comment.rating}</TableCell>
-//                   <TableCell>{new Date(comment.createdAt).toLocaleString()}</TableCell>
-//                 </TableRow>
-//               ))}
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-//       )}
-//     </Box>
-//   );
-// }
 
 import React, { useState, useEffect } from "react";
 import {
@@ -156,7 +28,6 @@ export default function UserComments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // States for editing a comment
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
   const [editedText, setEditedText] = useState("");
@@ -198,7 +69,6 @@ export default function UserComments() {
     fetchComments();
   }, [currentUser]);
 
-  // When a recipe title is clicked, open the edit dialog for that comment.
   const handleRowClick = (comment, e) => {
     if(e) e.stopPropagation();
     setSelectedComment(comment);
@@ -207,7 +77,6 @@ export default function UserComments() {
     setEditDialogOpen(true);
   };
 
-  // Update the comment via API
   const handleSaveComment = async () => {
     if (!selectedComment || !selectedComment.recipeId) {
       setError("Invalid comment data");
@@ -231,7 +100,6 @@ export default function UserComments() {
     }
   };
 
-  // Delete the comment via API
   const handleDeleteComment = async () => {
     if (!selectedComment || !selectedComment.recipeId) {
       setError("Invalid comment data");

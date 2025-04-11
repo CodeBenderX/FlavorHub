@@ -78,10 +78,8 @@ export default function RecipeList() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the current user
   const currentUser = auth.isAuthenticated()?.user || {};
 
-  // NEW: Read the "creator" query parameter from the URL
   const params = new URLSearchParams(location.search);
   const creatorQuery = params.get("creator");
 
@@ -122,15 +120,19 @@ export default function RecipeList() {
       }
 
       const data = await response.json();
+       
+    const sortedData = data.sort(
+      (a, b) => new Date(b.created) - new Date(a.created)
+    )
       if (!creatorQuery) {
-        // Show only the logged in user's recipes if no creator query parameter exists
+       
         const userRecipes = data.filter(
           (recipe) => recipe.creator === jwt.user.name
         );
       setRecipes(userRecipes);
       setTotalPages(Math.ceil(userRecipes.length / itemsPerPage));
     } else {
-      // Otherwise, show all recipes by the specified creator
+      
       setRecipes(data);
       setTotalPages(Math.ceil(data.length / itemsPerPage));
     }
@@ -149,13 +151,16 @@ export default function RecipeList() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const added = params.get("added");
-    if (added === "true") {
+    
+    if (params.get("added") === "true") {
       setConfirmationDialog({
         open: true,
         title: "Recipe Added",
         message: "Your recipe has been successfully added.",
       });
+      params.delete("added");
+      const newSearch = params.toString();
+      navigate(`${location.pathname}${newSearch ? "?" + newSearch : ""}`, { replace: true });
     }
   }, [location]);
 
@@ -305,16 +310,20 @@ export default function RecipeList() {
                   boxShadow: "none",
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{ display: "flex", 
+                  alignItems: "center", 
+                  gap: 2,
+                  flex: 1,
+                  minWidth: 0, 
+                  overflow: "hidden"
+                }}>
                   {recipe.image && recipe.image.data ? (
                     <Avatar
                       src={getImageUrl(recipe)}
                       alt={recipe.title}
                       sx={{ width: 60, height: 60 }}
                       variant="rounded"
-                      // imgProps={{
-                      //   onError: () => handleImageError(recipe._id),
-                      // }}
+                      
                     />
                   ) : (
                     <Avatar
@@ -323,7 +332,14 @@ export default function RecipeList() {
                       variant="rounded"
                     ></Avatar>
                   )}
-                  <Typography variant="h6" component="h2">
+                  <Typography variant="h6" component="h2"
+                    sx={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      flex: 1,
+                    }}
+                  >
                     {recipe.title}
                   </Typography>
                 </Box>
@@ -331,8 +347,8 @@ export default function RecipeList() {
                   <Button
                     variant="outlined"
                     endIcon={<ChevronRight />}
-                    sx={{ borderRadius: "4px" }}
                     onClick={() => handleViewRecipe(recipe._id)}
+                    sx={{ borderRadius: "4px" }}
                   >
                     View Recipe
                   </Button>

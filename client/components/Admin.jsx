@@ -32,7 +32,6 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState(""); 
 
-  // Dialog states for security and password updates
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -40,17 +39,15 @@ export default function AdminDashboard() {
   const [newSecurityAnswer, setNewSecurityAnswer] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  // Validation error messages
   const [securityError, setSecurityError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Recipe Dialog states
   const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
   const [recipeUser, setRecipeUser] = useState(null);
   const [userRecipes, setUserRecipes] = useState([]);
 
-  // Comment Dialog states
+  
   const [commentDialogOpen, setCommentDialogOpen] = useState(false);
   const [selectedRecipeForComments, setSelectedRecipeForComments] = useState(null);
 
@@ -73,10 +70,8 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- Security Dialog Handlers ---
   const openSecurityDialog = (user) => {
     setSelectedUser(user);
-    // Prepopulate with the user's current security question if available
     setNewSecurityQuestion(user.securityQuestion || "");
     setNewSecurityAnswer("");
     setSecurityError("");
@@ -90,12 +85,11 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateSecurity = async () => {
-    // Validate that both fields are provided
     if (!newSecurityQuestion.trim() || !newSecurityAnswer.trim()) {
       setSecurityError("Both security question and answer are required.");
       return;
     }
-    // Call the API helper with keys matching the user account update
+    
     const response = await updateUserSecurity(selectedUser._id, {
       securityQuestion: newSecurityQuestion,
       securityAnswerPlain: newSecurityAnswer,
@@ -109,7 +103,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- Password Dialog Handlers ---
+  
   const openPasswordDialog = (user) => {
     setSelectedUser(user);
     setNewPassword("");
@@ -125,7 +119,7 @@ export default function AdminDashboard() {
   };
 
   const handleUpdatePassword = async () => {
-    // Validate password: non-empty and at least 6 characters
+    
     if (!newPassword) {
       setPasswordError("Password cannot be empty.");
       return;
@@ -138,7 +132,7 @@ export default function AdminDashboard() {
         setPasswordError("Passwords do not match.");
         return;
       }
-    // Call the API helper using key "password" as expected by your backend
+    
     const response = await updateUserPassword(selectedUser._id, { password: newPassword });
     if (response.error) {
       setMessage(response.error);
@@ -149,7 +143,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- Set/Remove Admin Handlers ---
+  
   const handleSetAdmin = async (user) => {
     const response = await setUserAsAdmin(user._id);
     if (response.error) {
@@ -170,7 +164,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- Recipe List Handler ---
+  
   const handleShowRecipes = async (user) => {
     setRecipeUser(user);
     try {
@@ -187,7 +181,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // --- Comment Dialog Handlers ---
+  
   const openCommentDialog = (recipe) => {
     setSelectedRecipeForComments(recipe);
     setCommentDialogOpen(true);
@@ -204,12 +198,12 @@ export default function AdminDashboard() {
       setMessage(response.error);
     } else {
       setMessage("Comment deleted successfully.");
-      // Update the comments in the selected recipe locally
+      
       setSelectedRecipeForComments((prev) => ({
         ...prev,
         comments: prev.comments.filter((c) => c._id !== commentId),
       }));
-      // Also update the recipes list so that the comment count is updated there
+      
         setUserRecipes((prevRecipes) =>
           prevRecipes.map((r) =>
             r._id === recipeId ? { ...r, comments: r.comments.filter((c) => c._id !== commentId) } : r
@@ -218,7 +212,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Get the authenticated user's name from auth
+  
   const authUser = auth.isAuthenticated() && auth.isAuthenticated().user;
 
   return (
@@ -245,7 +239,7 @@ export default function AdminDashboard() {
                 <TableCell>{user.admin ? "Yes" : "No"}</TableCell>
                 <TableCell>
                 {user.name === "Admin" ? (
-                    // Super admin: only allow read-only action, e.g. view recipes
+                    
                     <>
                       <Button
                         variant="outlined"
@@ -266,11 +260,11 @@ export default function AdminDashboard() {
                   <Button variant="outlined" onClick={() => openPasswordDialog(user)} sx={{ mr: 1 }}>
                     Reset Password
                   </Button>
-                  <Button variant="outlined" onClick={() => handleShowRecipes(user)} sx={{ mr: 1 }}>
+                  {/* <Button variant="outlined" onClick={() => handleShowRecipes(user)} sx={{ mr: 1 }}>
                     Recipe List
-                  </Button>
+                  </Button> */}
                   {user.admin ? (
-                    // If the user is admin, check if it is the current logged in admin.
+                    
                     user._id === authUser._id ? (
                       <Typography variant="caption" sx={{ ml: 1 }}>
                         Current Logged In Admin

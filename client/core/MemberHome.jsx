@@ -15,10 +15,12 @@ import {
 import Box from "@mui/material/Box";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import auth from "../lib/auth-helper";
-import { list, listByIngredient, listByCreator } from '../recipe/api-recipe';
+import { list, listByIngredient, listByCreator } from "../recipe/api-recipe";
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
 import waffleImage from "../src/assets/waffle-registeredhome-small.png";
 import bannerAds from "../src/assets/banner-ads.png";
+import InputAdornment from "@mui/material/InputAdornment";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -59,7 +61,7 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
 
   return (
     <div
-      style={{ position: "relative", overflow: "hidden", padding: "0 40px" }}
+      style={{ position: "relative", overflow: "hidden", padding: "0 20px" }}
     >
       <IconButton
         sx={{
@@ -87,6 +89,7 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
           msOverflowStyle: "none",
           "&::-webkit-scrollbar": { display: "none" },
           scrollBehavior: "smooth",
+          padding: "8px 0", 
         }}
       >
         {featuredRecipes && featuredRecipes.length > 0 ? (
@@ -94,24 +97,31 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
             <div
               key={recipe.id || recipe._id}
               style={{
-                minWidth: 300,
-                maxWidth: 300,
-                margin: "8px",
+                minWidth: 280,
+                maxWidth: 280,
+                margin: "0 8px",
                 flexShrink: 0,
               }}
             >
-              <Card sx={{ height: "auto", backgroundColor: "#f2f0ef" }}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  backgroundColor: "#f2f0ef",
+                }}
+              >
                 <CardMedia
                   component="img"
-                  height="250"
+                  height="180"
                   image={recipe.image}
                   alt={recipe.title}
                   onError={() => handleImageError(recipe._id)}
                   sx={{
-                    objectFit: 'cover',
-                    objectPosition: 'center',
-                    width: '100%',
-                    flexGrow: 1
+                    objectFit: "cover",
+                    objectPosition: "center",
+                    width: "100%",
+                    flexGrow: 1,
                   }}
                 />
                 <CardContent sx={{ p: 2 }}>
@@ -119,14 +129,19 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
                     gutterBottom
                     variant="h6"
                     component="div"
-                    sx={{ mb: 1 }}
+                    sx={{
+                      mb: 1,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
                   >
                     {recipe.title}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ mb: 1  }}
+                    sx={{ mb: 1 }}
                   >
                     Prep: {recipe.preptime} min | Cook: {recipe.cooktime} min |
                     Serves: {recipe.servings}
@@ -153,12 +168,16 @@ const RecipeCarousel = ({ featuredRecipes, handleViewRecipe, getImageUrl }) => {
           ))
         ) : (
           <Typography
-          variant="h6"
-          align="center"
-          style={{ marginTop: "2rem", marginBottom: "2rem" }}
-        >
-          No recipes available. Try adding some!
-        </Typography>
+            variant="h6"
+            align="center"
+            sx={{
+              marginTop: "2rem",
+              marginBottom: "2rem",
+              minWidth: "100%",
+            }}
+          >
+            No recipes available. Try adding some!
+          </Typography>
         )}
       </div>
       <IconButton
@@ -189,7 +208,7 @@ export default function MemberHome() {
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [displayCount, setDisplayCount] = useState(8); // New state variable
+  const [displayCount, setDisplayCount] = useState(8); 
   const [debug, setDebug] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -197,19 +216,22 @@ export default function MemberHome() {
   const location = useLocation();
 
   const getImageUrl = useCallback((recipe) => {
-    // If the image is already a valid data URL, return it
-  if (typeof recipe.image === 'string' && recipe.image.startsWith("data:")) {
-    return recipe.image;
-  }
+    if (typeof recipe.image === "string" && recipe.image.startsWith("data:")) {
+      return recipe.image;
+    }
     if (recipe.image && recipe.image.data && recipe.image.contentType) {
       let imageData;
-      if (typeof recipe.image.data === 'string') {
+      if (typeof recipe.image.data === "string") {
         imageData = recipe.image.data;
-      } else if (typeof recipe.image.data === 'object' && recipe.image.data.type === 'Buffer') {
-        // Convert Buffer data to base64 string
-        imageData = btoa(String.fromCharCode.apply(null, recipe.image.data.data));
+      } else if (
+        typeof recipe.image.data === "object" &&
+        recipe.image.data.type === "Buffer"
+      ) {
+        imageData = btoa(
+          String.fromCharCode.apply(null, recipe.image.data.data)
+        );
       } else {
-        console.error('Unexpected image data format:', recipe.image.data);
+        console.error("Unexpected image data format:", recipe.image.data);
         return defaultRecipeImage;
       }
       return `data:${recipe.image.contentType};base64,${imageData}`;
@@ -238,11 +260,11 @@ export default function MemberHome() {
       if (data && data.error) {
         setError(data.error);
       } else {
-        // Construct full image URL for user-uploaded images, or use default image
+        
         const dbRecipes = data.map((recipe) => ({
-          ...recipe,   
+          ...recipe,
           image: getImageUrl(recipe),
-          //isDefault: false,
+          
         }));
         const sortedRecipes = dbRecipes.sort(
           (a, b) => new Date(b.created) - new Date(a.created)
@@ -259,11 +281,9 @@ export default function MemberHome() {
     }
   };
 
-  // 4) The function that actually does the search logic (backend + local)
   const performSearch = async (query) => {
     const jwt = auth.isAuthenticated();
     if (!query.trim()) {
-      // Empty query => show all recipes
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
       return;
@@ -272,29 +292,37 @@ export default function MemberHome() {
       setIsLoading(true);
       const [ingredientData, creatorData] = await Promise.all([
         listByIngredient({ ingredient: query }, jwt.token),
-        listByCreator({ name: query }, jwt.token)
+        listByCreator({ name: query }, jwt.token),
       ]);
 
-      const backendIngredientResults = Array.isArray(ingredientData) ? ingredientData : [];
-      const backendCreatorResults = Array.isArray(creatorData) ? creatorData : [];
+      const backendIngredientResults = Array.isArray(ingredientData)
+        ? ingredientData
+        : [];
+      const backendCreatorResults = Array.isArray(creatorData)
+        ? creatorData
+        : [];
 
-      // Local filter
-      const localResults = allRecipes.filter(r =>
-        r.title.toLowerCase().includes(query.toLowerCase()) ||
-        (r.description && r.description.toLowerCase().includes(query.toLowerCase()))
+      const localResults = allRecipes.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query.toLowerCase()) ||
+          (r.description &&
+            r.description.toLowerCase().includes(query.toLowerCase())) ||
+          (r.category && r.category.toLowerCase().includes(query.toLowerCase()))
       );
 
-      // Merge & remove duplicates
       const merged = [
         ...new Map(
-          [...backendIngredientResults, ...backendCreatorResults, ...localResults].map(item => [item._id, item])
-        ).values()
+          [
+            ...backendIngredientResults,
+            ...backendCreatorResults,
+            ...localResults,
+          ].map((item) => [item._id, item])
+        ).values(),
       ];
 
-      // Convert images
-      const finalResults = merged.map(r => ({
+      const finalResults = merged.map((r) => ({
         ...r,
-        image: getImageUrl(r)
+        image: getImageUrl(r),
       }));
       setFilteredRecipes(finalResults);
       setIsSearching(true);
@@ -306,22 +334,18 @@ export default function MemberHome() {
     }
   };
 
-   // 5) The form submission handler: updates the URL with ?search=...
-   const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Suppose your route is /member
       navigate(`/member?search=${encodeURIComponent(searchQuery)}`);
       performSearch(searchQuery);
     } else {
-      // If empty, remove any query param, reset to show all recipes
       navigate(`/member`);
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
     }
   };
 
-  // 6) On mount or whenever the URL changes, read the query param & run search
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryParam = params.get("search");
@@ -329,31 +353,29 @@ export default function MemberHome() {
       setSearchQuery(queryParam);
       performSearch(queryParam);
     } else if (!queryParam && allRecipes.length > 0) {
-      // If no search param => show all recipes
+      
       setFilteredRecipes(allRecipes);
       setIsSearching(false);
     }
   }, [location.search, allRecipes]);
 
-  // 1. In handleSearchInputChange, just update searchQuery:
-const handleSearchInputChange = (e) => {
-  const value = e.target.value;
-  setSearchQuery(value);
-  if (value.trim() === "") {
-    // When input is cleared, update the URL and reset recipes
-    navigate(`/member`);
-    setFilteredRecipes(allRecipes);
-    setIsSearching(false);
-  }
-};
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    if (value.trim() === "") {
+      navigate(`/member`);
+      setFilteredRecipes(allRecipes);
+      setIsSearching(false);
+    }
+  };
 
-const handleViewRecipe = (recipe) => {
-  // Pass the entire location, including ?search=...
-  navigate(`/viewrecipe?id=${recipe._id}`, { state: { from: location } });
-};
+  const handleViewRecipe = (recipe) => {
+    
+    navigate(`/viewrecipe?id=${recipe._id}`, { state: { from: location } });
+  };
 
   const handleLoadMore = () => {
-    setDisplayCount(prevCount => prevCount + 8);
+    setDisplayCount((prevCount) => prevCount + 8);
   };
 
   if (isLoading) {
@@ -383,13 +405,25 @@ const handleViewRecipe = (recipe) => {
     );
   }
 
-
   return (
     <div style={{ backgroundColor: "#f9f9f9" }}>
-      <Container component="main" maxWidth="lg" sx={{ width: "80%" }}>
+      <Container
+        component="main"
+        maxWidth="lg"
+        sx={{
+          width: { xs: "95%", md: "90%", lg: "80%" },
+          px: { xs: 0, sm: 2 }, 
+        }}
+      >
         <section>
-
-        <Box sx={{ position: "relative", width: "100%", height: "400px", mb: 4 }}>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              height: { xs: "300px", sm: "350px", md: "400px" },
+              mb: 4,
+            }}
+          >
             <CardMedia
               component="img"
               image={bannerAds}
@@ -407,14 +441,36 @@ const handleViewRecipe = (recipe) => {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.2)" // semi-transparent overlay for contrast
+                backgroundColor: "rgba(0, 0, 0, 0.4)",
               }}
             >
-              <Typography variant="h2" component="h1" sx={{ color: "white", mb: 0, lineHeight: 1.2 }}>
+              <Typography
+                variant="h2"
+                component="h1"
+                sx={{
+                  color: "white",
+                  mb: 0,
+                  lineHeight: 1.5,
+                  fontSize: { xs: "1.3rem", sm: "2.5rem", md: "3rem" }, 
+                  fontStyle: "bold",
+                }}
+              >
                 Discover Delicious Recipes
               </Typography>
-              <Typography variant="h5" component="p" sx={{ color: "white", mt: 1, mb: 1, lineHeight: 1.2 }}>
-              Find and share the best recipes from around the world
+              <Typography
+                variant="h5"
+                component="p"
+                sx={{
+                  color: "white",
+                  mt: 1,
+                  mb: 1,
+                  lineHeight: 1.2,
+                  fontSize: { xs: ".8rem", sm: "1.25rem", md: "1.5rem" },
+                  textAlign: "center",
+                  padding: "0 20px",
+                }}
+              >
+                Find and share the best recipes from around the world
               </Typography>
 
               <Box
@@ -425,18 +481,59 @@ const handleViewRecipe = (recipe) => {
                   maxWidth: "600px",
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
               >
                 <TextField
                   fullWidth
                   variant="outlined"
-                  placeholder="Search recipes or ingredients"
+                  placeholder="Search recipes, ingredients, recipe owner or category"
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                   sx={{
                     backgroundColor: "white",
-                    borderRadius: 1
+                    borderRadius: 1,
+                    "& .MuiInputBase-input::placeholder": {
+                      fontSize: { xs: "0.8rem", sm: "0.9rem" },
+                      whiteSpace: "normal",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2, 
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    },
+                    "& .MuiInputBase-input::placeholder": {
+                      opacity: 1,
+                      color: "text.secondary",
+                      whiteSpace: "normal", 
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2, 
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    },
+                    "& .MuiInputBase-root": {
+                      height: "auto", 
+                      minHeight: 56, 
+                      alignItems: "flex-start", 
+                      paddingBottom: { xs: "20px", sm: "5px" }, 
+                    },
+                  }}
+                  InputProps={{
+                    endAdornment: searchQuery ? (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => {
+                            setSearchQuery("");
+                            navigate(`/member`);
+                            setFilteredRecipes(allRecipes);
+                            setIsSearching(false);
+                          }}
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ) : null,
                   }}
                 />
                 <Button
@@ -447,10 +544,12 @@ const handleViewRecipe = (recipe) => {
                     mb: 4,
                     backgroundColor: "#DA3743",
                     border: "1px solid #DA3743",
+                    borderRadius: 25,
+                    fontSize: { xs: ".7rem", sm: "1rem", md: "1.2rem" },
                     "&:hover": {
                       backgroundColor: "#FFFFFF",
-                      color: "#DA3743"
-                    }
+                      color: "#DA3743",
+                    },
                   }}
                 >
                   Find Your Favourite Recipes
@@ -458,7 +557,6 @@ const handleViewRecipe = (recipe) => {
               </Box>
             </Box>
           </Box>
-        
         </section>
 
         {!isSearching && (
@@ -475,41 +573,78 @@ const handleViewRecipe = (recipe) => {
         )}
 
         <section style={{ marginTop: "2rem" }}>
-          <Typography variant="h4" component="h2" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h2"
+            gutterBottom
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
+            }}
+          >
             {isSearching ? "Search Results" : "All Recipes"}
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {filteredRecipes.slice(0, displayCount).map((recipe) => (
-              <Grid item xs={12} sm={6} md={3} key={recipe.id || recipe._id}>
-                <Card sx={{ height: 350, display: 'flex', flexDirection: 'column'}}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                key={recipe.id || recipe._id}
+              >
+                <Card
+                  sx={{
+                    height: { xs: 300, sm: 350 },
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   <CardMedia
                     component="img"
-                    height="200"
+                    sx={{
+                      height: { xs: 140, sm: 180, md: 200 },
+                      objectFit: "cover",
+                    }}
                     image={recipe.image}
                     alt={recipe.title}
                   />
-                  <CardContent sx={{ p: 2, background: "#f2f0ef", display: 'flex', flexGrow: 1, flexDirection: 'column'  }}>
+
+                  <CardContent
+                    sx={{
+                      p: 2,
+                      background: "#f2f0ef",
+                      display: "flex",
+                      flexGrow: 1,
+                      flexDirection: "column",
+                    }}
+                  >
                     <Typography
                       gutterBottom
                       variant="h6"
                       component="div"
-                      sx={{ mb: 1 }}
+                      sx={{
+                        mb: 1,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                     >
                       {recipe.title}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
-                      sx={{ 
-                        mb: 1, 
-                        flexGrow: 1, 
-                        fontSize: 'clamp(0.65rem, 2vw, 0.85rem)',
+                      sx={{
+                        mb: 1,
+                        flexGrow: 1,
+                        fontSize: "clamp(0.65rem, 2vw, 0.85rem)",
                         lineHeight: 1.2,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
                         WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
+                        WebkitBoxOrient: "vertical",
                       }}
                     >
                       Prep: {recipe.preptime} min | Cook: {recipe.cooktime} min
@@ -521,7 +656,7 @@ const handleViewRecipe = (recipe) => {
                       onClick={() => handleViewRecipe(recipe)}
                       fullWidth
                       sx={{
-                        mt: 'auto',
+                        mt: "auto",
                         border: "1px solid #000000",
                         backgroundColor: "#000000",
                         "&:hover": {
@@ -536,7 +671,7 @@ const handleViewRecipe = (recipe) => {
               </Grid>
             ))}
           </Grid>
-          {displayCount < filteredRecipes.length && ( // Load More button
+          {displayCount < filteredRecipes.length && ( 
             <Button
               variant="contained"
               color="primary"
@@ -544,9 +679,11 @@ const handleViewRecipe = (recipe) => {
               fullWidth
               sx={{
                 mt: 2,
+                py: { xs: 1, sm: 1.5 }, 
                 border: "1px solid #DA3743",
                 color: "#DA3743",
                 backgroundColor: "transparent",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
                 "&:hover": {
                   color: "white !important",
                   backgroundColor: "#DA3743",
@@ -562,16 +699,17 @@ const handleViewRecipe = (recipe) => {
               align="center"
               style={{ marginTop: "2rem" }}
             >
-              {isSearching 
-                ? "No recipes found matching your search." 
+              {isSearching
+                ? "No recipes found matching your search."
                 : "No recipes available. Try adding some!"}
             </Typography>
           )}
         </section>
-        <section style={{paddingTop: 20, paddingBottom: 20}}>
-        <Card
+        <section style={{ paddingTop: 20, paddingBottom: 20 }}>
+          <Card
             sx={{
               display: "flex",
+              flexDirection: { xs: "column", md: "row" },
               maxWidth: "100%",
               borderRadius: "16px",
               overflow: "hidden",
@@ -584,7 +722,8 @@ const handleViewRecipe = (recipe) => {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                padding: "32px",
+                padding: { xs: "20px", md: "32px" },
+                order: { xs: 2, md: 1 },
               }}
             >
               <Typography
@@ -594,21 +733,31 @@ const handleViewRecipe = (recipe) => {
                 sx={{
                   fontWeight: "bold",
                   color: "#1A1A1A",
+                  fontSize: { xs: "1.5rem", md: "2rem" },
                 }}
               >
                 Ready to get started?
               </Typography>
-              <Typography variant="body1" sx={{ color: "#4A4A4A" }}>
-              Whether you're looking to find new recipes, share your own, or connect with fellow food lovers, FreshPlate is here to make your culinary journey more exciting and accessible.
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "#4A4A4A",
+                  fontSize: { xs: "0.9rem", md: "1rem" },
+                }}
+              >
+                Whether you're looking to find new recipes, share your own, or
+                connect with fellow food lovers, FreshPlate is here to make your
+                culinary journey more exciting and accessible.
               </Typography>
             </CardContent>
             <CardMedia
               component="img"
               sx={{
-                width: "35%",
+                width: { xs: "100%", md: "35%" },
+                height: { xs: "200px", md: "auto" },
                 objectFit: "cover",
                 objectPosition: "center",
-                transform: "scaleX(1.2)",
+                order: { xs: 1, md: 2 },
               }}
               image={waffleImage}
               alt="Delicious waffle with fresh fruits"

@@ -4,7 +4,7 @@ import CardMedia from "@mui/material/CardMedia";
 import communityMeal from "../src/assets/communityMeal.png";
 import cookingTogether from "../src/assets/cookingTogether.png";
 import familyCookingTogether from "../src/assets/familyCookingTogether.png";
-import logo from "../src/assets/FreshPlate-logo.png"; // Import FreshPlate logo
+import logo from "../src/assets/FreshPlate-logo.png"; 
 import aboutAngelo from "../src/assets/Aboutus-Angelo.jpg";
 import aboutLorenzo from "../src/assets/Aboutus-Lorenzo.jpg";
 import aboutBianca from "../src/assets/Aboutus-Bianca.jpeg";
@@ -14,7 +14,7 @@ import aboutBhuvnesh from "../src/assets/Aboutus-Bhuvnesh.jpg";
 
 export default function AboutPage() {
   return (
-    // edited the width to make it ocuppy 80% of the page contained them in div so it will contain the background
+    
     <div style={{ backgroundColor: "#f9f9f9" }}>
       <Box sx={{ width: "80%", margin: "auto", padding: 4 }}>
         {" "}

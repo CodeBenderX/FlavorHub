@@ -15,8 +15,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  TextField, // <-- Make sure to import TextField
-  Rating // <-- Import the Rating component
+  TextField, 
+  Rating 
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,7 +24,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import auth from "../lib/auth-helper";
 import defaultRecipeImage from "../src/assets/defaultFoodImage.png";
-// UPDATED: Import API helper functions for updating and deleting comments.
 import { updateRecipeComment, deleteRecipeComment } from '../recipe/api-recipe';
 
 const theme = createTheme({
@@ -50,22 +49,18 @@ export default function ViewRecipe() {
   const [isCreator, setIsCreator] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   
-  // NEW: For adding comments (name, email, comment text, rating)
-  // const [commentName, setCommentName] = useState("");
-  // const [commentEmail, setCommentEmail] = useState("");
   const [commentText, setCommentText] = useState("");
   const [commentRating, setCommentRating] = useState(0);
 
-   // NEW: States for editing a comment
+   
    const [editDialogOpen, setEditDialogOpen] = useState(false);
    const [selectedComment, setSelectedComment] = useState(null);
    const [editedText, setEditedText] = useState("");
    const [editedRating, setEditedRating] = useState(0);
 
-  // For validation error dialog
   const [validationErrorDialogOpen, setValidationErrorDialogOpen] = useState(false);
   const [validationErrorMessage, setValidationErrorMessage] = useState("");
-  const [validationErrorField, setValidationErrorField] = useState(""); // "comment" or "rating"
+  const [validationErrorField, setValidationErrorField] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,15 +85,12 @@ export default function ViewRecipe() {
     return defaultRecipeImage;
   }, []);
 
-  // Get current signed in user from auth helper
   const jwt = auth.isAuthenticated();
   const currentUser = jwt ? jwt.user : {};
 
-  // Refs for fields
   const commentRef = useRef(null);
   const ratingRef = useRef(null);
 
-  // Helper function to convert ArrayBuffer to Base64
   const arrayBufferToBase64 = (buffer) => {
     let binary = '';
     const bytes = new Uint8Array(buffer);
@@ -138,7 +130,6 @@ export default function ViewRecipe() {
       const data = await response.json();
       setRecipe(data);
 
-      // Check if current user is the creator or an admin
       setIsCreator(jwt.user.name === data.creator);
       setIsAdmin(jwt.user.role === 'admin');
       
@@ -154,21 +145,25 @@ export default function ViewRecipe() {
     fetchRecipe();
   }, [fetchRecipe]);
 
-  // const handleClose = useCallback(() => {
-  //   navigate(from);
-  // }, [navigate, from]);
 
   const handleClose = () => {
-    if (location.state && location.state.from) {
-      // This should include the search query (e.g. "/memberhome?search=chicken")
-      const { pathname, search } = location.state.from;
-      //navigate(`${pathname}${search}`);
-      navigate(location.state.from);
+
+  if (location.state && location.state.from) {
+    const from = location.state.from;
+    console.log("Navigating back to:", from);
+    if (typeof from === "string") {
+      navigate(from);
+    } else if (from.pathname) {
+      
+      const url = from.pathname + (from.search || "");
+      navigate(url);
     } else {
-      // Fallback: simply go back one step in history
       navigate("/memberhome");
     }
-  };
+  } else {
+    navigate("/memberhome");
+  }
+};
 
   const handleBack = useCallback(() => {
     const fromPath = location.state?.from || '/';
@@ -207,18 +202,17 @@ export default function ViewRecipe() {
     setDeleteDialog(false);
   }, [recipeId, navigate, from]);
 
-  // NEW: Handle submit comment
   const handleSubmitComment = async () => {
-    // Reset previous error
+
     setValidationErrorMessage("");
-    // Validate comment text
+
     if (!commentText.trim()) {
       setValidationErrorMessage("Comment cannot be empty.");
       setValidationErrorField("comment");
       setValidationErrorDialogOpen(true);
       return;
     }
-    // Validate rating (at least 1 star)
+    
     if (!commentRating || commentRating < 1) {
       setValidationErrorMessage("Please provide a rating at least 1 star.");
       setValidationErrorField("rating");
@@ -231,7 +225,6 @@ export default function ViewRecipe() {
         throw new Error("User not authenticated");
       }
 
-       // POST to your backend endpoint for adding a comment
        const response = await fetch(`/api/recipes/${recipeId}/comments`, {
         method: "POST",
         headers: {
@@ -251,12 +244,9 @@ export default function ViewRecipe() {
         throw new Error("Failed to post comment");
       }
 
-      // Expect the updated recipe with new comment in the response
       const updatedRecipe = await response.json();
       setRecipe(updatedRecipe);
-      // Clear the form
-      // setCommentName("");
-      // setCommentEmail("");
+    
       setCommentText("");
       setCommentRating(0);
     } catch (err) {
@@ -265,20 +255,17 @@ export default function ViewRecipe() {
     }
   };
 
-  // Called when error dialog is closed; focuses the appropriate field.
   const handleValidationErrorDialogClose = () => {
     setValidationErrorDialogOpen(false);
     if (validationErrorField === "comment" && commentRef.current) {
       commentRef.current.focus();
     } else if (validationErrorField === "rating" && ratingRef.current) {
-      // Focus the rating component if possible. If not, fallback to comment.
+      
       ratingRef.current.focus?.() || commentRef.current.focus();
     }
   };
 
-   // ===================== NEW COMMENT EDIT/DELETE FUNCTIONS =====================
-
-  // Called when the edit icon is clicked on a comment.
+   
   const handleEditClick = (comment) => {
     setSelectedComment(comment);
     setEditedText(comment.text);
@@ -286,7 +273,6 @@ export default function ViewRecipe() {
     setEditDialogOpen(true);
   };
 
-  // Updates the comment via the API.
   const handleSaveComment = async () => {
     if (!selectedComment || !recipeId) return;
     try {
@@ -299,7 +285,6 @@ export default function ViewRecipe() {
       if (response.error) {
         setError(response.error);
       } else {
-        // Update the comment in the local state
         setRecipe(prevRecipe => ({
           ...prevRecipe,
           comments: prevRecipe.comments.map(comment =>
@@ -317,7 +302,7 @@ export default function ViewRecipe() {
     }
   };
 
-  // Deletes a comment via the API.
+
   const handleDeleteComment = async (comment) => {
     if (!comment || !recipeId) return;
     try {
@@ -326,7 +311,6 @@ export default function ViewRecipe() {
       if (response.error) {
         setError(response.error);
       } else {
-        // Remove the deleted comment from the local state
         setRecipe(prevRecipe => ({
           ...prevRecipe,
           comments: prevRecipe.comments.filter(c => c._id !== comment._id)
@@ -337,8 +321,6 @@ export default function ViewRecipe() {
       setError("Failed to delete comment.");
     }
   };
-
-  // ===================== END COMMENT EDIT/DELETE FUNCTIONS =====================
 
   if (loading) {
     return (
@@ -458,7 +440,7 @@ export default function ViewRecipe() {
             </Box>
 
             <Chip
-              label="Medium"
+              label={recipe.category || 'Miscellaneous'}
               sx={{
                 bgcolor: '#ffd700',
                 color: '#000',
@@ -552,7 +534,7 @@ export default function ViewRecipe() {
                   p: 2,
                   border: '1px solid #e0e0e0',
                   borderRadius: '4px',
-                  position: 'relative', // Allows placing icons absolutely
+                  position: 'relative', 
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
