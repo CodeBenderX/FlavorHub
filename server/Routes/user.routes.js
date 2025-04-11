@@ -14,15 +14,12 @@ router.param('userId', userCtrl.userByID)
 router.route('/api/users/:userId').get(userCtrl.read)
 router.route('/api/users/:userId').put(userCtrl.update)
 router.route('/api/users/:userId').delete(userCtrl.remove)
-// Admin-specific route to update a user's admin status
 router.route('/api/users/:userId/admin')
   .put(authCtrl.requireSignin, authCtrl.isAdmin, userCtrl.setAdmin);
 
-  // New route: Update security question/answer
   router.route('/api/users/:userId/security')
   .put(authCtrl.requireSignin, authCtrl.isAdmin, userCtrl.updateSecurity);  
 
-  // New route: Update password (accessible by self or admin)
 router.route('/api/users/:userId/password')
 .put(authCtrl.requireSignin, authCtrl.canUpdateUser, userCtrl.updatePassword);
 

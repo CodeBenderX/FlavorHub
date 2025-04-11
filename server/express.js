@@ -21,8 +21,6 @@ import path from "path";
         optionsSuccessStatus: 204
       }
       
-
-   // Serve static files from the build directory
    app.use(express.static(path.join(CURRENT_WORKING_DIR, "../dist/app")))
    app.use(express.json());
    app.use(express.urlencoded({ extended: true }));
@@ -53,7 +51,7 @@ import path from "path";
    app.get('/', (req, res) => {
     res.status(200).send(Template()) 
     }) 
-    // Catch-all route to serve the React app
+    
     app.get('*', (req, res) => {
         res.sendFile(path.join(CURRENT_WORKING_DIR, '../dist/app/index.html'))
     })

@@ -37,7 +37,7 @@ const forgotPassword = async (user) => {
       console.log(err);
     }
   }
-// Verify the user's security answer
+
 const verifySecurityAnswer = async ({ email, securityAnswer }) => {
   try {
     const response = await fetch('/auth/verify-security-answer', {
@@ -55,7 +55,6 @@ const verifySecurityAnswer = async ({ email, securityAnswer }) => {
   }
 }
 
-// Reset the user's password
 const resetPassword = async ({ email, newPassword }) => {
   try {
     const response = await fetch('/auth/reset-password', {

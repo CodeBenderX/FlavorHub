@@ -160,7 +160,6 @@ export default function Signin() {
     return <Navigate to={from} />;
   }
 
-  // Open Forgot Password modal
   const handleOpenForgotPassword = () => {
     setForgotPasswordOpen(true);
     setFpEmail("");
@@ -176,25 +175,23 @@ export default function Signin() {
     setResetMessage("");
   };
 
-  // Close Forgot Password modal
+  
   const handleCloseForgotPassword = () => {
     setForgotPasswordOpen(false);
   };
 
-  // Handle Forgot Password submit
+  
   const handleForgotPasswordSubmit = async () => {
-    // Call the backend API to retrieve the security question
+    
     const response = await forgotPassword({ email: fpEmail });
     if (response.error) {
       setFpError(response.error);
     } else if (response.securityQuestion) {
       setFpMessage(response.message || "Security question retrieved.");
       setSecurityQuestion(response.securityQuestion);
-
-      // Close the forgot password email dialog
+      
       setForgotPasswordOpen(false);
 
-      // Open the security question dialog
       setSecurityQuestionDialogOpen(true);
     } else {
       setFpError("Unexpected response from server.");
@@ -213,8 +210,6 @@ export default function Signin() {
     setSqError("");
     setSqMessage("");
 
-    // Call the backend to verify the security answer
-    // Normalize the answer before sending it
     const normalizedAnswer = securityAnswer.trim().toLowerCase();
     const response = await verifySecurityAnswer({
       email: fpEmail,
@@ -229,17 +224,14 @@ export default function Signin() {
     }
   };
 
-  // ----- Reset Password Dialog Handlers -----
   const handleCloseResetPassword = () => {
     setResetPasswordDialogOpen(false);
   };
 
-  // Submit the new password to the backend
   const handleResetPasswordSubmit = async () => {
     setResetError("");
     setResetMessage("");
 
-    // Validate new password fields
     if (!newPassword || !confirmPassword) {
       setResetError("Please fill out both fields.");
       return;
@@ -249,22 +241,21 @@ export default function Signin() {
       return;
     }
 
-    // Call the backend to reset the password
     const response = await resetPassword({ email: fpEmail, newPassword });
     if (response.error) {
       setResetError(response.error);
     } else {
       setResetMessage("Your password has been successfully reset.");
-      // Optionally, you can close the dialog after a delay:
+      
       setResetPasswordDialogOpen(false);
       setResetSuccessDialogOpen(true);
     }
   };
 
-  // ----- Reset Success Dialog -----
+  
   const handleCloseResetSuccessDialog = () => {
     setResetSuccessDialogOpen(false);
-    navigate("/signin"); // Navigate back to sign-in page. Adjust the route if needed.
+    navigate("/signin"); 
   };
 
   return (
@@ -351,7 +342,7 @@ export default function Signin() {
         </Grid>
       </Grid>
 
-      {/* Forgot Password Modal */}
+      
       <Dialog open={forgotPasswordOpen} onClose={handleCloseForgotPassword} fullWidth maxWidth="xs">
         <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
@@ -376,7 +367,7 @@ export default function Signin() {
         </DialogActions>
       </Dialog>
 
-      {/* Security Question Dialog */}
+      
       <Dialog
         open={securityQuestionDialogOpen}
         onClose={handleCloseSecurityQuestion}
@@ -406,7 +397,7 @@ export default function Signin() {
         </DialogActions>
       </Dialog>
 
-      {/* Reset Password Dialog */}
+      
       <Dialog open={resetPasswordDialogOpen} onClose={handleCloseResetPassword} fullWidth maxWidth="xs">
         <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
@@ -441,7 +432,7 @@ export default function Signin() {
         </DialogActions>
       </Dialog>
 
-      {/* Reset Success Dialog */}
+      
       <Dialog
         open={resetSuccessDialogOpen}
         onClose={handleCloseResetSuccessDialog}
