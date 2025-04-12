@@ -1,9 +1,7 @@
-// __tests__/auth.controller.test.js
 import authController from '../Controllers/auth.controller.js';
 import User from '../Models/user.model.js';
 import jwt from 'jsonwebtoken';
 
-// Mock dependencies
 jest.mock('../Models/user.model.js');
 jest.mock('jsonwebtoken');
 
