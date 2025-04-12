@@ -1,4 +1,3 @@
-// ✅ Mock auth-helper.js
 jest.mock('../../lib/auth-helper', () => ({
     isAuthenticated: jest.fn(() => ({ token: 'fake-token' })),
   }))
