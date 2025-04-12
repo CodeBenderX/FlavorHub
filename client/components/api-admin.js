@@ -1,6 +1,5 @@
-import auth from "../lib/auth-helper"; // Adjust the path based on your project structure
+import auth from "../lib/auth-helper"; 
 
-// Fetch all registered users from the backend
 export const getAllUsers = async () => {
   try {
     const response = await fetch("/api/users", {
@@ -17,7 +16,6 @@ export const getAllUsers = async () => {
   }
 };
 
-// Update a user's security question and answer
 export const updateUserSecurity = async (userId, { securityQuestion, securityAnswerPlain }) => {
     try {
       const response = await fetch(`/api/users/${userId}/security`, {
@@ -35,7 +33,6 @@ export const updateUserSecurity = async (userId, { securityQuestion, securityAns
     }
   };
 
-// Update a user's password
 export const updateUserPassword = async (userId, { password }) => {
   try {
     const response = await fetch(`/api/users/${userId}/password`, {
@@ -102,7 +99,6 @@ export const setUserAsAdmin = async (userId) => {
     }
   };
 
-  // Delete a recipe comment by recipeId and commentId
 export const deleteRecipeComment = async (recipeId, commentId) => {
   try {
     const response = await fetch(`/api/recipes/${recipeId}/comments/${commentId}`, {

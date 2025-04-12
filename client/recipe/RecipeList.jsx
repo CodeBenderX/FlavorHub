@@ -78,10 +78,8 @@ export default function RecipeList() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the current user
   const currentUser = auth.isAuthenticated()?.user || {};
 
-  // NEW: Read the "creator" query parameter from the URL
   const params = new URLSearchParams(location.search);
   const creatorQuery = params.get("creator");
 
@@ -122,19 +120,19 @@ export default function RecipeList() {
       }
 
       const data = await response.json();
-       // Sort recipes by the created date (newest first)
+       
     const sortedData = data.sort(
       (a, b) => new Date(b.created) - new Date(a.created)
     )
       if (!creatorQuery) {
-        // Show only the logged in user's recipes if no creator query parameter exists
+       
         const userRecipes = data.filter(
           (recipe) => recipe.creator === jwt.user.name
         );
       setRecipes(userRecipes);
       setTotalPages(Math.ceil(userRecipes.length / itemsPerPage));
     } else {
-      // Otherwise, show all recipes by the specified creator
+      
       setRecipes(data);
       setTotalPages(Math.ceil(data.length / itemsPerPage));
     }
@@ -153,14 +151,7 @@ export default function RecipeList() {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    // const added = params.get("added");
-    // if (added === "true") {
-    //   setConfirmationDialog({
-    //     open: true,
-    //     title: "Recipe Added",
-    //     message: "Your recipe has been successfully added.",
-    //   });
-    // }
+    
     if (params.get("added") === "true") {
       setConfirmationDialog({
         open: true,
@@ -273,15 +264,14 @@ export default function RecipeList() {
           Recipes
         </Typography>
 
-        {/* 3. If a creator query exists, display a header showing recipes by that creator */}
+        
         {creatorQuery && (
           <Typography variant="subtitle1" sx={{ mb: 3, textAlign: "center" }}>
             Showing recipes by: <strong>{creatorQuery}</strong>
           </Typography>
         )}
 
-        {/* If a creatorQuery exists and doesn't match the current user, 
-            we hide the "Add New Recipe" button. */}
+        
         {(!creatorQuery || creatorQuery === currentUser.name) && (
         <Link to="/addrecipe" style={{ textDecoration: "none" }}>
           <Button
@@ -332,9 +322,7 @@ export default function RecipeList() {
                       alt={recipe.title}
                       sx={{ width: 60, height: 60 }}
                       variant="rounded"
-                      // imgProps={{
-                      //   onError: () => handleImageError(recipe._id),
-                      // }}
+                      
                     />
                   ) : (
                     <Avatar
@@ -363,7 +351,7 @@ export default function RecipeList() {
                   >
                     View Recipe
                   </Button>
-                  {/* Only show Edit/Delete if the user is the recipe creator OR user is admin */}
+                  
                   {(recipe.creator === auth.isAuthenticated().user.name ||
                     auth.isAuthenticated().user.role === 'admin') && (
                   <>

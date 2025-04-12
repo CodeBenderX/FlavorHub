@@ -47,7 +47,7 @@ const AddRecipePage = () => {
     preptime: "",
     cooktime: "",
     servings: "",
-    // New field: Category with default value "Miscellaneous"
+    
     category: "Miscellaneous",
     image: "",
   });
@@ -113,7 +113,7 @@ const AddRecipePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted", values); // Debug log
+    console.log("Form submitted", values);
 
     if (!isAuthenticated) {
       setError("You must be logged in to create a recipe.");
@@ -209,7 +209,7 @@ const AddRecipePage = () => {
                 error={!!errors.title}
                 helperText={errors.title}
               />
-               {/* New: Category Dropdown */}
+               
                <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel id="category-label">Category</InputLabel>
                 <Select
