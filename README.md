@@ -57,7 +57,7 @@
 
 6. **Visit http://localhost:3000 in your browser to see the application in action.**
 7. **Deploying**
-   *You can choose your third-party deployment site. For this, we used render.*
+   *You can choose your third-party deployment site. For this, we used **render**.*
 
 **Contributing**
 We welcome contributions to FlavorHub! If you want to improve the project or fix a bug, feel free to fork the repository, create a branch, and submit a pull request.
